@@ -1,0 +1,3011 @@
+<!DOCTYPE html>
+<html lang="hi" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>NEON PULSE: Ultimate 3-in-1 Addictive Arcade</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      background: #060814;
+      color: #f8fafc;
+      overflow-x: hidden;
+    }
+    .neon-border {
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.28), inset 0 0 15px rgba(6, 182, 212, 0.12);
+    }
+    .neon-text {
+      text-shadow: 0 0 12px rgba(34, 211, 238, 0.7);
+    }
+    .gold-glow {
+      text-shadow: 0 0 10px rgba(250, 204, 21, 0.75);
+    }
+    canvas {
+      touch-action: none;
+      display: block;
+    }
+    .tab-active {
+      background: linear-gradient(135deg, #06b6d4, #6366f1);
+      color: #ffffff;
+      box-shadow: 0 0 14px rgba(6, 182, 212, 0.55);
+    }
+    @keyframes pulseFast {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+    .fever-badge {
+      animation: pulseFast 0.6s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-slate-950 text-slate-100">
+
+  <!-- Top Navigation & Status Bar -->
+  <header class="w-full bg-slate-900/90 border-b border-cyan-500/30 px-3 py-2 sticky top-0 z-30 backdrop-blur-md">
+    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 to-indigo-600 flex items-center justify-center font-black text-slate-950 text-lg shadow-lg shadow-cyan-500/30">⚡</div>
+        <div>
+          <h1 class="font-black text-base sm:text-lg tracking-wider text-cyan-300 neon-text leading-none">NEON PULSE 2026</h1>
+          <p class="text-[11px] text-slate-400">3-in-1 Non-Stop Arcade • खेलते ही जाओ!</p>
+        </div>
+      </div>
+
+      <!-- Mode Switcher Tabs (6 Mini-Games + Party Blitz) -->
+      <div class="flex flex-wrap items-center bg-slate-950/95 p-1 rounded-xl border border-slate-800 gap-1">
+        <button id="modeSwarmBtn" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all tab-active">
+          🛸 Swarm Survivor
+        </button>
+        <button id="modeMergeBtn" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition-all">
+          🪐 Cosmo Merge
+        </button>
+        <button id="modeStackBtn" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition-all">
+          🏗️ Neon Stack
+        </button>
+        <button id="modeBreakerBtn" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition-all">
+          🧱 Cyber Bricks
+        </button>
+        <button id="modeRunnerBtn" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition-all">
+          ⚡ Pulse Dash
+        </button>
+        <button id="modeAimBtn" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition-all">
+          🎯 Reflex Core
+        </button>
+        <button id="partyBlitzBtn" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-black bg-amber-500/20 border border-amber-400/50 text-amber-300 hover:bg-amber-500/30 transition-all" title="Auto-switch mini-games every 25s!">
+          🎲 Party Blitz: OFF
+        </button>
+      </div>
+
+      <!-- Coins, Streak, Shop & Audio Controls -->
+      <div class="flex items-center gap-2">
+        <div class="flex items-center gap-1.5 bg-amber-500/15 border border-amber-400/40 px-2.5 py-1 rounded-xl">
+          <span class="text-sm">🪙</span>
+          <span id="coinDisplay" class="font-extrabold text-amber-300 text-xs sm:text-sm gold-glow">250</span>
+        </div>
+        <button id="openShopBtn" type="button" class="px-2.5 py-1.5 rounded-xl bg-fuchsia-600/25 hover:bg-fuchsia-600/40 border border-fuchsia-400/50 text-fuchsia-200 text-xs font-bold transition">
+          🛒 Shop & Upgrades
+        </button>
+        <button id="openMissionsBtn" type="button" class="px-2.5 py-1.5 rounded-xl bg-emerald-600/25 hover:bg-emerald-600/40 border border-emerald-400/50 text-emerald-200 text-xs font-bold transition relative">
+          🎯 Missions
+          <span id="missionBadge" class="hidden absolute -top-1 -right-1 w-3 h-3 rounded-full bg-emerald-400 animate-ping"></span>
+        </button>
+        <button id="luckySpinBtn" type="button" class="px-2.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/35 border border-amber-400/50 text-amber-300 text-xs font-bold transition">
+          🎰 Spin
+        </button>
+        <button id="bgmToggleBtn" type="button" class="px-2 py-1.5 rounded-xl bg-indigo-600/25 hover:bg-indigo-600/40 border border-indigo-400/50 text-indigo-200 text-xs font-bold transition" title="Synthwave Arcade Music">
+          🎵 BGM
+        </button>
+        <button id="soundToggleBtn" type="button" class="p-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-bold" title="Sound Effects">
+          🔊
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main class="flex-1 max-w-6xl w-full mx-auto p-2 sm:p-4 grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+
+    <!-- Left/Main Game Stage (8 cols on desktop) -->
+    <section class="lg:col-span-8 flex flex-col gap-2">
+      <!-- Pro Developer Studio Mini-Game Hub Strip & Player Rank Telemetry -->
+      <div class="bg-slate-900/95 border border-cyan-500/25 rounded-2xl p-2.5 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5">
+          <div id="rankIconBox" class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-rose-500 flex items-center justify-center text-base font-black text-slate-950 shadow">
+            🏆
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span id="playerRankTitle" class="text-xs font-black text-amber-300 uppercase tracking-wider">PRO ROOKIE I</span>
+              <span id="totalStarsBadge" class="px-1.5 py-0.5 rounded bg-slate-800 text-[10px] font-bold text-cyan-300">⭐ 0 Mastery</span>
+            </div>
+            <div class="text-[11px] text-slate-400">6 Mini-Games • Shared Progression • 60 FPS Engine</div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 text-[11px] font-bold">
+          <span id="fpsTelemetry" class="px-2 py-1 rounded-lg bg-slate-950 border border-slate-800 text-emerald-400 font-mono">60 FPS</span>
+          <span id="blitzTimerBadge" class="hidden px-2.5 py-1 rounded-lg bg-amber-500 text-slate-950 font-black animate-pulse">🎲 NEXT GAME: 25s</span>
+          <button id="crtToggleBtn" type="button" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 transition">
+            📺 Retro CRT: OFF
+          </button>
+        </div>
+      </div>
+
+      <!-- Live HUD Bar -->
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-2.5 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-3">
+          <div>
+            <div class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Current Score</div>
+            <div id="scoreDisplay" class="text-lg sm:text-xl font-black text-white">0</div>
+          </div>
+          <div class="h-7 w-px bg-slate-800"></div>
+          <div>
+            <div class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Best Record</div>
+            <div id="highScoreDisplay" class="text-lg sm:text-xl font-black text-cyan-400">0</div>
+          </div>
+          <div class="h-7 w-px bg-slate-800"></div>
+          <div>
+            <div class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Combo / Fever</div>
+            <div id="comboDisplay" class="text-sm sm:text-base font-extrabold text-amber-400">x1.0</div>
+          </div>
+        </div>
+
+        <!-- Mode-specific Progress / XP Bar -->
+        <div class="flex-1 min-w-[140px] max-w-xs">
+          <div class="flex justify-between text-[11px] font-bold mb-1">
+            <span id="hudStatusLeft" class="text-cyan-300">LVL 1 • Wave 1</span>
+            <span id="hudStatusRight" class="text-slate-400">XP 0/50</span>
+          </div>
+          <div class="w-full h-2.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+            <div id="xpBarFill" class="h-full bg-gradient-to-r from-cyan-400 via-indigo-500 to-fuchsia-500 transition-all duration-150" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- Quick Action Controls -->
+        <div class="flex items-center gap-1.5">
+          <button id="specialSkillBtn" type="button" class="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-black text-xs shadow-md hover:brightness-110 active:scale-95 transition">
+            💥 NOVA [SPACE]
+          </button>
+          <button id="pauseBtn" type="button" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs border border-slate-700">
+            ⏸️ Pause
+          </button>
+          <button id="restartBtn" type="button" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-rose-300 font-bold text-xs border border-slate-700">
+            🔄 Restart
+          </button>
+        </div>
+      </div>
+
+      <!-- Canvas Wrapper -->
+      <div id="canvasContainer" class="relative w-full h-[430px] sm:h-[500px] bg-slate-950 rounded-2xl border border-cyan-500/40 neon-border overflow-hidden">
+        <canvas id="gameCanvas" class="w-full h-full"></canvas>
+        <div id="crtOverlay" class="hidden pointer-events-none absolute inset-0 z-10" style="background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.28) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03)); background-size: 100% 4px, 6px 100%;"></div>
+
+        <!-- Lucky Spin Jackpot Modal -->
+        <div id="luckySpinModal" class="hidden absolute inset-0 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-4 z-30 text-center">
+          <div class="text-xs font-black uppercase tracking-widest text-amber-400 mb-1">🎰 ARCADE JACKPOT WHEEL</div>
+          <h3 class="text-xl font-black text-white mb-2">Lucky Cyber Spin (Cost: 🪙 60)</h3>
+          <p class="text-xs text-slate-300 max-w-xs mb-4">स्पिन करें और पाएं 300 तक कॉइन्स, फ्री अपग्रेड लेवल, या सुपर फीवर बूस्ट!</p>
+          <div id="spinWheelVisual" class="w-28 h-28 rounded-full border-4 border-amber-400 bg-gradient-to-tr from-fuchsia-600 via-indigo-600 to-cyan-400 flex items-center justify-center text-4xl shadow-xl shadow-amber-500/20 mb-4 transition-transform duration-700">
+            🎁
+          </div>
+          <div id="spinResultText" class="text-sm font-extrabold text-cyan-300 h-6 mb-3">Ready to Spin!</div>
+          <div class="flex gap-2">
+            <button id="doSpinBtn" type="button" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-black text-xs shadow-lg hover:scale-105 transition">
+              🎰 SPIN NOW (🪙 60)
+            </button>
+            <button id="closeSpinModalBtn" type="button" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs border border-slate-700">
+              ✕ Close
+            </button>
+          </div>
+        </div>
+
+        <!-- Level-Up Draft Modal (Swarm Mode) -->
+        <div id="levelUpOverlay" class="hidden absolute inset-0 bg-slate-950/88 backdrop-blur-md flex flex-col items-center justify-center p-4 z-20">
+          <div class="text-xs font-extrabold uppercase tracking-widest text-amber-400 mb-1">⚡ LEVEL UP! POWER UPGRADE CHUNO ⚡</div>
+          <h2 class="text-xl sm:text-2xl font-black text-white mb-4 text-center">अपना नया सुपर-वेपन चुनें</h2>
+          <div id="upgradeChoicesContainer" class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-xl"></div>
+        </div>
+
+        <!-- Game Over / Victory / Start Overlay -->
+        <div id="gameOverOverlay" class="hidden absolute inset-0 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-5 z-20 text-center">
+          <div id="overlayBadge" class="px-3 py-1 rounded-full bg-rose-500/20 border border-rose-400/40 text-rose-300 text-xs font-bold mb-2">
+            RUN COMPLETE
+          </div>
+          <h2 id="overlayTitle" class="text-2xl sm:text-3xl font-black text-white mb-1">FANTASTIC RUN!</h2>
+          <p id="overlaySubtitle" class="text-xs sm:text-sm text-slate-300 max-w-md mb-4">
+            आपने शानदार खेला! अपने कॉइन्स से परमानेंट अपग्रेड खरीदें या तुरंत नया रिकॉर्ड बनाएं।
+          </p>
+          <div class="grid grid-cols-3 gap-3 w-full max-w-sm bg-slate-900/90 border border-slate-800 rounded-2xl p-3 mb-4">
+            <div>
+              <div class="text-[10px] text-slate-400 uppercase">Score</div>
+              <div id="finalScoreStat" class="text-base sm:text-lg font-black text-white">0</div>
+            </div>
+            <div>
+              <div class="text-[10px] text-slate-400 uppercase">Coins Earned</div>
+              <div id="finalCoinsStat" class="text-base sm:text-lg font-black text-amber-400">+0</div>
+            </div>
+            <div>
+              <div class="text-[10px] text-slate-400 uppercase">Max Combo</div>
+              <div id="finalComboStat" class="text-base sm:text-lg font-black text-cyan-400">x1</div>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center justify-center gap-3">
+            <button id="playAgainBtn" type="button" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-600 text-slate-950 font-black text-sm shadow-lg shadow-cyan-500/30 hover:scale-105 transition">
+              ▶️ Play Again (एक और राउंड!)
+            </button>
+            <button id="overlayShopBtn" type="button" class="px-4 py-2.5 rounded-xl bg-fuchsia-600/30 border border-fuchsia-400/50 text-fuchsia-200 font-bold text-sm hover:bg-fuchsia-600/50 transition">
+              🛒 Upgrade Power
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- On-Screen Mobile & Desktop Quick Controls Bar -->
+      <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-2.5 flex flex-wrap items-center justify-between gap-2">
+        <div id="modeControlHint" class="text-xs text-slate-300">
+          🎮 <strong class="text-cyan-300">Controls:</strong> माउस/उंगली घुमाएं या <kbd class="px-1.5 py-0.5 bg-slate-800 rounded text-[11px]">WASD / Arrow Keys</kbd> दबाएं। ऑटो-फायर चालू है!
+        </div>
+        <!-- Touch D-Pad / Action Buttons for Mobile & Quick Clicks -->
+        <div class="flex items-center gap-1.5">
+          <button id="btnLeft" type="button" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 active:bg-cyan-600 text-xs font-bold border border-slate-700">⬅️ Left</button>
+          <button id="btnUp" type="button" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 active:bg-cyan-600 text-xs font-bold border border-slate-700">⬆️ Up / Drop</button>
+          <button id="btnDown" type="button" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 active:bg-cyan-600 text-xs font-bold border border-slate-700">⬇️ Down</button>
+          <button id="btnRight" type="button" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 active:bg-cyan-600 text-xs font-bold border border-slate-700">➡️ Right</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Sidebar: Live Powerups, Permanent Shop, Skins & Missions (4 cols on desktop) -->
+    <aside class="lg:col-span-4 flex flex-col gap-3 w-full">
+
+      <!-- Active Mode Info & Live Loadout Card -->
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5">
+        <div class="flex items-center justify-between mb-2">
+          <h2 id="sidebarModeTitle" class="font-extrabold text-sm text-cyan-300">🛸 Mode 1: Cyber Swarm Survivor</h2>
+          <span id="feverStatusPill" class="px-2 py-0.5 rounded-full text-[10px] font-black bg-slate-800 text-slate-300">NORMAL SPEED</span>
+        </div>
+        <p id="sidebarModeDesc" class="text-xs text-slate-400 mb-3">
+          दुश्मनों की लहरों से बचें! आपका शिप खुद निशाना लगाता है। नीले जेम्स से Level Up करें और गोल्ड कॉइन्स से अपनी ताकत हमेशा के लिए बढ़ाएं।
+        </p>
+
+        <!-- Active Perks / Planet Evolution Guide -->
+        <div class="bg-slate-950/80 border border-slate-800/80 rounded-xl p-2.5">
+          <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5" id="loadoutHeader">
+            Active Weapons & Perks
+          </div>
+          <div id="activeLoadoutList" class="flex flex-wrap gap-1.5 text-xs"></div>
+        </div>
+      </div>
+
+      <!-- Permanent Meta-Upgrade Shop Card -->
+      <div id="shopPanel" class="bg-slate-900/90 border border-fuchsia-500/30 rounded-2xl p-3.5">
+        <div class="flex items-center justify-between mb-2">
+          <div>
+            <h3 class="font-extrabold text-sm text-fuchsia-300">🛒 Permanent Power Shop</h3>
+            <p class="text-[11px] text-slate-400">सभी 3 गेम्स में आपकी ताकत बढ़ाए</p>
+          </div>
+          <span class="text-xs font-bold text-amber-300" id="shopCoinReadout">🪙 250</span>
+        </div>
+
+        <div id="shopItemsContainer" class="flex flex-col gap-2 mb-3"></div>
+
+        <!-- Neon Theme / Skin Selector -->
+        <div class="border-t border-slate-800 pt-2.5">
+          <div class="text-[11px] font-bold text-slate-300 mb-1.5">🎨 Visual Neon Theme (Skins)</div>
+          <div id="skinSelectorContainer" class="grid grid-cols-2 gap-1.5"></div>
+        </div>
+      </div>
+
+      <!-- Missions & Daily Milestones Card -->
+      <div id="missionsPanel" class="bg-slate-900/90 border border-emerald-500/30 rounded-2xl p-3.5">
+        <div class="flex items-center justify-between mb-2">
+          <div>
+            <h3 class="font-extrabold text-sm text-emerald-300">🎯 Live Arcade Missions</h3>
+            <p class="text-[11px] text-slate-400">पूरा करने पर बोनस कॉइन्स क्लेम करें!</p>
+          </div>
+          <button id="claimBonusGiftBtn" type="button" class="px-2 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-[11px] font-bold transition">
+            🎁 +50 Free
+          </button>
+        </div>
+        <div id="missionsListContainer" class="flex flex-col gap-2"></div>
+      </div>
+
+    </aside>
+  </main>
+
+  <!-- Toast Feedback Banner -->
+  <div id="toastBanner" class="fixed bottom-4 right-4 z-50 hidden px-4 py-2.5 rounded-xl bg-slate-900/95 border border-cyan-400/50 text-cyan-200 text-xs font-bold shadow-xl"></div>
+
+  <script>
+    // =========================================================================
+    // STATE & PERSISTENCE (Wrapped in try/catch per sandbox rules)
+    // =========================================================================
+    const STORAGE_KEY = 'neon_pulse_arcade_v1';
+    const defaultSave = {
+      coins: 250,
+      highScores: { swarm: 0, merge: 0, stack: 0, breaker: 0, runner: 0, aim: 0 },
+      upgrades: {
+        firepower: 1,
+        magnet: 1,
+        greed: 1,
+        shield: 1
+      },
+      unlockedSkins: ['cyber_cyan'],
+      activeSkin: 'cyber_cyan',
+      missions: [
+        { id: 'm_combo', title: '10x या उससे ज़्यादा Combo बनाएं', target: 10, progress: 0, reward: 120, claimed: false },
+        { id: 'm_swarm_lvl', title: 'Swarm Mode में Level 4 तक पहुंचें', target: 4, progress: 1, reward: 150, claimed: false },
+        { id: 'm_merge_planet', title: 'Cosmo Merge में 15 बार प्लैनेट मर्ज करें', target: 15, progress: 0, reward: 140, claimed: false },
+        { id: 'm_stack_tower', title: 'Neon Stack में 12 ब्लॉक का टावर बनाएं', target: 12, progress: 0, reward: 130, claimed: false }
+      ]
+    };
+
+    let saveData = JSON.parse(JSON.stringify(defaultSave));
+    function loadSaveData() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          saveData.coins = typeof parsed.coins === 'number' ? parsed.coins : 250;
+          if (parsed.highScores) saveData.highScores = Object.assign(saveData.highScores, parsed.highScores);
+          if (parsed.upgrades) saveData.upgrades = Object.assign(saveData.upgrades, parsed.upgrades);
+          if (Array.isArray(parsed.unlockedSkins)) saveData.unlockedSkins = parsed.unlockedSkins;
+          if (parsed.activeSkin) saveData.activeSkin = parsed.activeSkin;
+          if (Array.isArray(parsed.missions)) {
+            parsed.missions.forEach((pm, idx) => {
+              if (saveData.missions[idx]) {
+                saveData.missions[idx].progress = pm.progress || 0;
+                saveData.missions[idx].claimed = !!pm.claimed;
+              }
+            });
+          }
+        }
+      } catch (e) {
+        // Ignore storage errors in sandbox
+      }
+    }
+
+    function persistSaveData() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(saveData));
+      } catch (e) {
+        // Ignore storage errors in sandbox
+      }
+    }
+
+    // =========================================================================
+    // SYNTHESIZED WEB AUDIO SOUND ENGINE (Zero external audio files)
+    // =========================================================================
+    let audioCtx = null;
+    let soundEnabled = true;
+
+    function ensureAudio() {
+      if (!soundEnabled) return null;
+      try {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) audioCtx = new AudioContextClass();
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      } catch (e) {
+        return null;
+      }
+      return audioCtx;
+    }
+
+    function playSound(type) {
+      const ctx = ensureAudio();
+      if (!ctx) return;
+      try {
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        if (type === 'shoot') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(520, now);
+          osc.frequency.exponentialRampToValueAtTime(160, now + 0.07);
+          gain.gain.setValueAtTime(0.06, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+          osc.start(now);
+          osc.stop(now + 0.07);
+        } else if (type === 'hit') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(260, now);
+          osc.frequency.exponentialRampToValueAtTime(80, now + 0.09);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+          osc.start(now);
+          osc.stop(now + 0.09);
+        } else if (type === 'coin') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(660, now);
+          osc.frequency.setValueAtTime(990, now + 0.05);
+          gain.gain.setValueAtTime(0.09, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+          osc.start(now);
+          osc.stop(now + 0.16);
+        } else if (type === 'merge') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(340, now);
+          osc.frequency.exponentialRampToValueAtTime(780, now + 0.14);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+          osc.start(now);
+          osc.stop(now + 0.15);
+        } else if (type === 'levelup') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.setValueAtTime(554, now + 0.08);
+          osc.frequency.setValueAtTime(659, now + 0.16);
+          osc.frequency.setValueAtTime(880, now + 0.24);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.42);
+          osc.start(now);
+          osc.stop(now + 0.42);
+        } else if (type === 'nova') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(180, now);
+          osc.frequency.exponentialRampToValueAtTime(45, now + 0.38);
+          gain.gain.setValueAtTime(0.16, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+          osc.start(now);
+          osc.stop(now + 0.4);
+        } else if (type === 'gameover') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(300, now);
+          osc.frequency.linearRampToValueAtTime(110, now + 0.35);
+          gain.gain.setValueAtTime(0.11, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.36);
+          osc.start(now);
+          osc.stop(now + 0.36);
+        }
+      } catch (e) {
+        // Ignore audio glitches
+      }
+    }
+
+    // Procedural Synthwave Arcade BGM Loop
+    let bgmPlaying = false;
+    let bgmInterval = null;
+    let bgmStep = 0;
+    const BGM_NOTES = [130.81, 164.81, 196.00, 261.63, 196.00, 164.81, 146.83, 220.00];
+
+    function toggleBgm() {
+      bgmPlaying = !bgmPlaying;
+      const btn = document.getElementById('bgmToggleBtn');
+      if (btn) {
+        btn.textContent = bgmPlaying ? '🎵 BGM: ON' : '🎵 BGM';
+        btn.className = bgmPlaying
+          ? 'px-2 py-1.5 rounded-xl bg-indigo-500 text-slate-950 text-xs font-black transition shadow-md'
+          : 'px-2 py-1.5 rounded-xl bg-indigo-600/25 hover:bg-indigo-600/40 border border-indigo-400/50 text-indigo-200 text-xs font-bold transition';
+      }
+      if (bgmPlaying) {
+        ensureAudio();
+        if (bgmInterval) clearInterval(bgmInterval);
+        bgmInterval = setInterval(() => {
+          if (!bgmPlaying || !soundEnabled || isPaused) return;
+          const ctxA = ensureAudio();
+          if (!ctxA) return;
+          try {
+            const now = ctxA.currentTime;
+            const osc = ctxA.createOscillator();
+            const gain = ctxA.createGain();
+            osc.type = 'triangle';
+            const freq = BGM_NOTES[bgmStep % BGM_NOTES.length] * (combo >= 5 ? 1.25 : 1);
+            osc.frequency.setValueAtTime(freq, now);
+            gain.gain.setValueAtTime(0.032, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+            osc.connect(gain);
+            gain.connect(ctxA.destination);
+            osc.start(now);
+            osc.stop(now + 0.17);
+            bgmStep++;
+          } catch (e) {}
+        }, 185);
+        showToast('🎵 Synthwave Arcade Music चालू हो गया!');
+      } else {
+        if (bgmInterval) clearInterval(bgmInterval);
+        bgmInterval = null;
+        showToast('🎵 BGM बंद किया गया');
+      }
+    }
+
+    // =========================================================================
+    // SKINS & PERMANENT SHOP CONFIG
+    // =========================================================================
+    const SKINS = {
+      cyber_cyan: { name: 'Cyber Cyan', cost: 0, primary: '#22d3ee', secondary: '#818cf8', accent: '#f472b6', bgGlow: 'rgba(34, 211, 238, 0.14)' },
+      solar_gold: { name: 'Solar Gold', cost: 200, primary: '#facc15', secondary: '#fb923c', accent: '#f87171', bgGlow: 'rgba(250, 204, 21, 0.14)' },
+      matrix_lime: { name: 'Matrix Emerald', cost: 300, primary: '#34d399', secondary: '#a3e635', accent: '#38bdf8', bgGlow: 'rgba(52, 211, 153, 0.14)' },
+      crimson_void: { name: 'Crimson Overdrive', cost: 450, primary: '#fb7185', secondary: '#c084fc', accent: '#fde047', bgGlow: 'rgba(251, 113, 133, 0.15)' }
+    };
+
+    const SHOP_UPGRADES = [
+      { key: 'firepower', name: '⚡ Turbo Fire & Speed', desc: 'शूटिंग स्पीड और स्कोर बोनस +20%', baseCost: 100 },
+      { key: 'magnet', name: '🧲 Hyper Magnet Aura', desc: 'जेम्स और कॉइन्स दूर से खिंचे आएंगे', baseCost: 90 },
+      { key: 'greed', name: '🪙 Golden Multiplier', desc: 'हर राउंड में +25% ज़्यादा कॉइन्स', baseCost: 120 },
+      { key: 'shield', name: '🛡️ Max Hull & Armor', desc: 'एक्स्ट्रा हेल्थ और परफेक्ट हिट बफर', baseCost: 110 }
+    ];
+
+    // =========================================================================
+    // GAME ENGINE CORE VARIABLES
+    // =========================================================================
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    let cw = 800;
+    let ch = 500;
+
+    let currentMode = 'swarm'; // 'swarm' | 'merge' | 'stack'
+    let isPaused = false;
+    let isGameOver = false;
+    let isLevelUpModal = false;
+    let animFrameId = null;
+
+    // Shared Session Stats
+    let score = 0;
+    let sessionCoins = 0;
+    let combo = 1;
+    let maxSessionCombo = 1;
+    let comboTimer = 0;
+    let screenShake = 0;
+    let novaCooldown = 0; // 0 = ready
+
+    // Visual FX Arrays
+    let particles = [];
+    let floatingTexts = [];
+    let stars = [];
+
+    // Input Tracking
+    const keys = { ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false, KeyW: false, KeyS: false, KeyA: false, KeyD: false };
+    let pointer = { x: 400, y: 250, active: false };
+
+    // =========================================================================
+    // MODE 1: SWARM SURVIVOR STATE
+    // =========================================================================
+    let swarm = {
+      player: { x: 400, y: 250, r: 15, hp: 100, maxHp: 100, speed: 3.7, angle: 0 },
+      level: 1,
+      xp: 0,
+      xpNeeded: 45,
+      wave: 1,
+      waveTimer: 0,
+      fireCooldown: 0,
+      orbitalAngle: 0,
+      lightningCooldown: 0,
+      weapons: {
+        blasterLvl: 1,
+        orbitals: 1,
+        spreadShot: 0,
+        chainLightning: 0,
+        droneBuddy: 0,
+        regenAura: 0
+      },
+      bullets: [],
+      enemies: [],
+      gems: []
+    };
+
+    // =========================================================================
+    // MODE 2: COSMO MERGE (SUIKA PHYSICS) STATE
+    // =========================================================================
+    const PLANET_TIERS = [
+      { level: 0, name: 'Meteor', r: 17, color: '#38bdf8', emoji: '☄️', pts: 15 },
+      { level: 1, name: 'Moon', r: 24, color: '#a855f7', emoji: '🌙', pts: 35 },
+      { level: 2, name: 'Mars', r: 32, color: '#fb7185', emoji: '🔴', pts: 70 },
+      { level: 3, name: 'Earth', r: 41, color: '#34d399', emoji: '🌍', pts: 140 },
+      { level: 4, name: 'Neptune', r: 51, color: '#60a5fa', emoji: '🌀', pts: 280 },
+      { level: 5, name: 'Saturn', r: 63, color: '#facc15', emoji: '🪐', pts: 550 },
+      { level: 6, name: 'Sun Core', r: 76, color: '#f97316', emoji: '☀️', pts: 1100 },
+      { level: 7, name: 'Supernova', r: 90, color: '#f43f5e', emoji: '🌟', pts: 2500 }
+    ];
+
+    let mergeGame = {
+      orbs: [],
+      dropX: 400,
+      currentTier: 0,
+      nextTier: 1,
+      dropCooldown: 0,
+      mergesCount: 0,
+      dangerTimer: 0
+    };
+
+    // =========================================================================
+    // MODE 3: NEON STACK TOWER STATE
+    // =========================================================================
+    let stackGame = {
+      blocks: [],
+      debris: [],
+      movingBlock: null,
+      level: 0,
+      perfectStreak: 0,
+      cameraY: 0,
+      baseWidth: 210,
+      blockHeight: 26
+    };
+
+    // =========================================================================
+    // MODE 4: CYBER BRICK BREAKER (NEON ARKANOID) STATE
+    // =========================================================================
+    let breakerGame = {
+      paddle: { x: 340, w: 125, h: 14 },
+      balls: [],
+      bricks: [],
+      powerDrops: [],
+      wave: 1,
+      ClearedCount: 0
+    };
+
+    // =========================================================================
+    // MODE 5: PULSE DASH RUNNER (GEOMETRY GRAVITY RUNNER) STATE
+    // =========================================================================
+    let runnerGame = {
+      player: { x: 110, y: 300, vy: 0, size: 24, gravDir: 1, jumpsLeft: 2, angle: 0, trail: [] },
+      obstacles: [],
+      orbs: [],
+      speed: 5.4,
+      distance: 0,
+      spawnTimer: 0,
+      floorY: 410,
+      ceilY: 70
+    };
+
+    // =========================================================================
+    // MODE 6: REFLEX CORE AIM LAB (PRO ESPORTS AIM TRAINER) STATE
+    // =========================================================================
+    let aimGame = {
+      targets: [],
+      spawnTimer: 0,
+      hits: 0,
+      clicks: 0,
+      avgReactionMs: 280,
+      life: 100
+    };
+
+    // Party Blitz & Pro Telemetry State
+    let partyBlitzActive = false;
+    let partyBlitzFrames = 0;
+    let lastFrameTime = performance.now();
+    let measuredFps = 60;
+
+    // =========================================================================
+    // INITIALIZATION & RESIZING
+    // =========================================================================
+    function initStars() {
+      stars = [];
+      for (let i = 0; i < 55; i++) {
+        stars.push({
+          x: Math.random() * cw,
+          y: Math.random() * ch,
+          size: Math.random() * 2 + 0.6,
+          alpha: Math.random() * 0.65 + 0.2,
+          speed: Math.random() * 0.4 + 0.1
+        });
+      }
+    }
+
+    function resizeCanvas() {
+      const container = document.getElementById('canvasContainer');
+      if (!container) return;
+      const rect = container.getBoundingClientRect();
+      cw = Math.max(300, Math.floor(rect.width));
+      ch = Math.max(360, Math.floor(rect.height));
+      canvas.width = cw;
+      canvas.height = ch;
+      if (stars.length === 0) initStars();
+    }
+
+    function showToast(msg) {
+      const banner = document.getElementById('toastBanner');
+      if (!banner) return;
+      banner.textContent = msg;
+      banner.classList.remove('hidden');
+      clearTimeout(banner._timer);
+      banner._timer = setTimeout(() => {
+        banner.classList.add('hidden');
+      }, 2600);
+    }
+
+    // =========================================================================
+    // PARTICLE & FLOATING TEXT HELPERS
+    // =========================================================================
+    function spawnParticles(x, y, color, count, speedScale = 1) {
+      for (let i = 0; i < count; i++) {
+        const ang = Math.random() * Math.PI * 2;
+        const spd = (Math.random() * 3.8 + 0.8) * speedScale;
+        particles.push({
+          x,
+          y,
+          vx: Math.cos(ang) * spd,
+          vy: Math.sin(ang) * spd,
+          r: Math.random() * 3.5 + 1.5,
+          alpha: 1,
+          color
+        });
+      }
+    }
+
+    function addFloatingText(x, y, text, color = '#facc15', size = 14) {
+      floatingTexts.push({ x, y, text, color, size, alpha: 1, vy: -1.4 });
+    }
+
+    function bumpCombo(amount = 1) {
+      combo = Math.min(50, +(combo + amount * 0.5).toFixed(1));
+      if (combo > maxSessionCombo) maxSessionCombo = Math.floor(combo);
+      comboTimer = 210; // frames before decay
+      updateMissionProgress('m_combo', Math.floor(combo), true);
+    }
+
+    function awardCoins(baseAmount) {
+      const mult = 1 + (saveData.upgrades.greed - 1) * 0.25;
+      const gained = Math.max(1, Math.round(baseAmount * mult));
+      saveData.coins += gained;
+      sessionCoins += gained;
+      persistSaveData();
+      updateTopBarUI();
+      return gained;
+    }
+
+    // =========================================================================
+    // MISSIONS & SHOP UI RENDERING
+    // =========================================================================
+    function updateMissionProgress(missionId, value, isMaxCheck = false) {
+      const m = saveData.missions.find(item => item.id === missionId);
+      if (!m || m.claimed) return;
+      if (isMaxCheck) {
+        if (value > m.progress) m.progress = Math.min(m.target, value);
+      } else {
+        m.progress = Math.min(m.target, m.progress + value);
+      }
+      persistSaveData();
+      renderMissionsUI();
+    }
+
+    function renderMissionsUI() {
+      const container = document.getElementById('missionsListContainer');
+      const badge = document.getElementById('missionBadge');
+      if (!container) return;
+      let anyReady = false;
+      container.innerHTML = '';
+
+      saveData.missions.forEach(m => {
+        const isDone = m.progress >= m.target;
+        if (isDone && !m.claimed) anyReady = true;
+        const pct = Math.min(100, Math.round((m.progress / m.target) * 100));
+
+        const row = document.createElement('div');
+        row.className = 'p-2.5 rounded-xl bg-slate-950/90 border border-slate-800 flex items-center justify-between gap-2';
+        row.innerHTML = `
+          <div class="flex-1">
+            <div class="text-xs font-bold text-slate-200">${m.title}</div>
+            <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mt-1">
+              <div class="h-full bg-emerald-400" style="width:${pct}%"></div>
+            </div>
+            <div class="text-[10px] text-slate-400 mt-0.5">${m.progress}/${m.target} • इनाम: 🪙 ${m.reward}</div>
+          </div>
+        `;
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        if (m.claimed) {
+          btn.className = 'px-2.5 py-1 rounded-lg bg-slate-800 text-slate-500 text-[11px] font-bold cursor-default';
+          btn.textContent = '✓ Claimed';
+        } else if (isDone) {
+          btn.className = 'px-2.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black shadow-md animate-pulse';
+          btn.textContent = `Claim +${m.reward}`;
+          btn.addEventListener('click', () => {
+            m.claimed = true;
+            saveData.coins += m.reward;
+            playSound('levelup');
+            showToast(`🎉 मिशन पूरा! +${m.reward} कॉइन्स मिले!`);
+            persistSaveData();
+            updateTopBarUI();
+            renderMissionsUI();
+            renderShopUI();
+          });
+        } else {
+          btn.className = 'px-2 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 text-[11px] font-semibold';
+          btn.textContent = `${pct}%`;
+        }
+
+        row.appendChild(btn);
+        container.appendChild(row);
+      });
+
+      if (badge) {
+        badge.classList.toggle('hidden', !anyReady);
+      }
+    }
+
+    function renderShopUI() {
+      const container = document.getElementById('shopItemsContainer');
+      const skinBox = document.getElementById('skinSelectorContainer');
+      const coinReadout = document.getElementById('shopCoinReadout');
+      if (coinReadout) coinReadout.textContent = `🪙 ${saveData.coins}`;
+      if (!container || !skinBox) return;
+
+      container.innerHTML = '';
+      SHOP_UPGRADES.forEach(item => {
+        const lvl = saveData.upgrades[item.key] || 1;
+        const cost = Math.round(item.baseCost * Math.pow(1.45, lvl - 1));
+        const canAfford = saveData.coins >= cost;
+
+        const card = document.createElement('div');
+        card.className = 'p-2 rounded-xl bg-slate-950/90 border border-slate-800 flex items-center justify-between gap-2';
+        card.innerHTML = `
+          <div>
+            <div class="text-xs font-bold text-white">${item.name} <span class="text-fuchsia-400 font-black">Lv.${lvl}</span></div>
+            <div class="text-[11px] text-slate-400">${item.desc}</div>
+          </div>
+        `;
+
+        const buyBtn = document.createElement('button');
+        buyBtn.type = 'button';
+        buyBtn.className = canAfford
+          ? 'px-2.5 py-1.5 rounded-lg bg-fuchsia-500 hover:bg-fuchsia-400 text-slate-950 font-black text-xs transition shrink-0'
+          : 'px-2.5 py-1.5 rounded-lg bg-slate-800 text-slate-500 font-bold text-xs shrink-0';
+        buyBtn.textContent = `🪙 ${cost}`;
+        buyBtn.addEventListener('click', () => {
+          if (saveData.coins < cost) {
+            showToast('⚠️ और कॉइन्स कमाएं या Free +50 बटन दबाएं!');
+            return;
+          }
+          saveData.coins -= cost;
+          saveData.upgrades[item.key] = lvl + 1;
+          swarm.player.maxHp = 100 + (saveData.upgrades.shield - 1) * 25;
+          swarm.player.hp = Math.min(swarm.player.maxHp, swarm.player.hp + 25);
+          playSound('levelup');
+          showToast(`🚀 ${item.name} अपग्रेड हो गया (Lv.${lvl + 1})!`);
+          persistSaveData();
+          updateTopBarUI();
+          renderShopUI();
+        });
+
+        card.appendChild(buyBtn);
+        container.appendChild(card);
+      });
+
+      skinBox.innerHTML = '';
+      Object.keys(SKINS).forEach(skinKey => {
+        const sk = SKINS[skinKey];
+        const unlocked = saveData.unlockedSkins.includes(skinKey);
+        const active = saveData.activeSkin === skinKey;
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `p-2 rounded-xl border text-left transition flex items-center justify-between ${
+          active
+            ? 'bg-cyan-500/20 border-cyan-400 text-white'
+            : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700'
+        }`;
+        btn.innerHTML = `
+          <div class="flex items-center gap-1.5">
+            <span class="w-3 h-3 rounded-full inline-block" style="background:${sk.primary}"></span>
+            <span class="text-[11px] font-bold">${sk.name}</span>
+          </div>
+          <span class="text-[10px] font-extrabold ${unlocked ? 'text-emerald-400' : 'text-amber-300'}">
+            ${active ? '✓ Active' : unlocked ? 'Use' : '🪙 ' + sk.cost}
+          </span>
+        `;
+        btn.addEventListener('click', () => {
+          if (unlocked) {
+            saveData.activeSkin = skinKey;
+            persistSaveData();
+            renderShopUI();
+            showToast(`🎨 ${sk.name} थीम एक्टिवेट हो गई!`);
+          } else if (saveData.coins >= sk.cost) {
+            saveData.coins -= sk.cost;
+            saveData.unlockedSkins.push(skinKey);
+            saveData.activeSkin = skinKey;
+            playSound('levelup');
+            persistSaveData();
+            updateTopBarUI();
+            renderShopUI();
+            showToast(`🌟 नई स्किन अनलॉक: ${sk.name}!`);
+          } else {
+            showToast(`🪙 इस स्किन के लिए ${sk.cost} कॉइन्स चाहिए!`);
+          }
+        });
+        skinBox.appendChild(btn);
+      });
+    }
+
+    function updateTopBarUI() {
+      const coinEl = document.getElementById('coinDisplay');
+      const scoreEl = document.getElementById('scoreDisplay');
+      const highEl = document.getElementById('highScoreDisplay');
+      const comboEl = document.getElementById('comboDisplay');
+      const feverPill = document.getElementById('feverStatusPill');
+
+      if (coinEl) coinEl.textContent = saveData.coins;
+      if (scoreEl) scoreEl.textContent = Math.floor(score).toLocaleString();
+
+      const currentBest = Math.max(score, saveData.highScores[currentMode] || 0);
+      if (score > (saveData.highScores[currentMode] || 0)) {
+        saveData.highScores[currentMode] = Math.floor(score);
+      }
+      if (highEl) highEl.textContent = Math.floor(currentBest).toLocaleString();
+
+      if (comboEl) {
+        comboEl.textContent = combo >= 5 ? `🔥 x${combo.toFixed(1)} FEVER` : `x${combo.toFixed(1)}`;
+      }
+      if (feverPill) {
+        if (combo >= 5) {
+          feverPill.textContent = '🔥 FEVER OVERDRIVE x2';
+          feverPill.className = 'px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-slate-950 fever-badge';
+        } else {
+          feverPill.textContent = '⚡ ACTIVE RUN';
+          feverPill.className = 'px-2 py-0.5 rounded-full text-[10px] font-black bg-slate-800 text-cyan-300';
+        }
+      }
+
+      // Update Pro Rank & Mastery Telemetry
+      const totalBest = Object.values(saveData.highScores).reduce((a, b) => a + (b || 0), 0);
+      const starsCount = Math.floor(totalBest / 500) + Object.values(saveData.upgrades).reduce((a, b) => a + b, 0) - 4;
+      const rankTitleEl = document.getElementById('playerRankTitle');
+      const starsBadgeEl = document.getElementById('totalStarsBadge');
+      if (starsBadgeEl) starsBadgeEl.textContent = `⭐ ${Math.max(1, starsCount)} Mastery`;
+      if (rankTitleEl) {
+        let rankName = 'BRONZE ROOKIE';
+        if (starsCount >= 35) rankName = '👑 ARCADE GRANDMASTER';
+        else if (starsCount >= 20) rankName = '💎 CYBER LEGEND';
+        else if (starsCount >= 10) rankName = '🔥 NEON KNIGHT';
+        else if (starsCount >= 4) rankName = '⚡ PRO STRIKER';
+        rankTitleEl.textContent = rankName;
+      }
+    }
+
+    function renderLoadoutSidebar() {
+      const box = document.getElementById('activeLoadoutList');
+      const header = document.getElementById('loadoutHeader');
+      if (!box || !header) return;
+      box.innerHTML = '';
+
+      if (currentMode === 'swarm') {
+        header.textContent = 'Active Cyber Weapons & Perks';
+        const items = [
+          { label: `🔫 Pulse Blaster Lv.${swarm.weapons.blasterLvl}` },
+          { label: `🛡️ Orbitals x${swarm.weapons.orbitals}` }
+        ];
+        if (swarm.weapons.spreadShot > 0) items.push({ label: `🔱 Spread Shot Lv.${swarm.weapons.spreadShot}` });
+        if (swarm.weapons.chainLightning > 0) items.push({ label: `⚡ Chain Tesla Lv.${swarm.weapons.chainLightning}` });
+        if (swarm.weapons.droneBuddy > 0) items.push({ label: `🤖 Auto Drone Lv.${swarm.weapons.droneBuddy}` });
+        if (swarm.weapons.regenAura > 0) items.push({ label: `💚 Nano Repair Lv.${swarm.weapons.regenAura}` });
+
+        items.forEach(it => {
+          const badge = document.createElement('span');
+          badge.className = 'px-2 py-1 rounded-lg bg-slate-900 border border-cyan-500/30 text-cyan-200 font-semibold text-[11px]';
+          badge.textContent = it.label;
+          box.appendChild(badge);
+        });
+      } else if (currentMode === 'merge') {
+        header.textContent = 'Planet Evolution Chain (छोटे से बड़ा)';
+        PLANET_TIERS.forEach(t => {
+          const badge = document.createElement('span');
+          badge.className = 'px-2 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-200 font-semibold text-[11px]';
+          badge.textContent = `${t.emoji} ${t.name}`;
+          box.appendChild(badge);
+        });
+      } else if (currentMode === 'stack') {
+        header.textContent = 'Neon Stack Combo Bonuses';
+        const tips = [
+          '🎯 Perfect Hit = ब्लॉक चौड़ाई बरकरार + 2x Score',
+          '🔥 3x Perfect Streak = ब्लॉक वापस बड़ा होगा!',
+          '💥 SPACE = Auto-Align Nova Assist'
+        ];
+        tips.forEach(tip => {
+          const div = document.createElement('div');
+          div.className = 'w-full text-[11px] text-slate-300 py-0.5';
+          div.textContent = tip;
+          box.appendChild(div);
+        });
+      } else if (currentMode === 'breaker') {
+        header.textContent = 'Cyber Brick Breaker Perks';
+        [
+          '🧱 Explosive Gold Bricks = आसपास के ब्रिक्स भी फूटेंगे',
+          '⚽ Multi-Ball Drop = एक साथ 3 नियोन बॉल्स',
+          '💥 SPACE = Spawn Extra Plasma Ball तुरंत!'
+        ].forEach(tip => {
+          const div = document.createElement('div');
+          div.className = 'w-full text-[11px] text-slate-300 py-0.5';
+          div.textContent = tip;
+          box.appendChild(div);
+        });
+      } else if (currentMode === 'runner') {
+        header.textContent = 'Pulse Dash Runner Abilities';
+        [
+          '🦘 Click / Tap / Up = Double Jump (हवा में भी कूदें)',
+          '🔄 SPACE = Gravity Flip (छत पर दौड़ें!)',
+          '⚡ स्पीड बढ़ने पर दोगुना स्कोर और कॉइन्स'
+        ].forEach(tip => {
+          const div = document.createElement('div');
+          div.className = 'w-full text-[11px] text-slate-300 py-0.5';
+          div.textContent = tip;
+          box.appendChild(div);
+        });
+      } else if (currentMode === 'aim') {
+        header.textContent = 'Reflex Core Esports Metrics';
+        [
+          '🎯 नीले और गोल्ड टारगेट्स को छोटा होने से पहले फोड़ें',
+          '💣 लाल बॉम्ब (Decoy) पर क्लिक न करें!',
+          '💥 SPACE = Time Freeze + Screen Clear Snipe!'
+        ].forEach(tip => {
+          const div = document.createElement('div');
+          div.className = 'w-full text-[11px] text-slate-300 py-0.5';
+          div.textContent = tip;
+          box.appendChild(div);
+        });
+      }
+    }
+
+    // =========================================================================
+    // RESET & START MODES
+    // =========================================================================
+    function startCurrentMode() {
+      isGameOver = false;
+      isPaused = false;
+      isLevelUpModal = false;
+      score = 0;
+      sessionCoins = 0;
+      combo = 1;
+      maxSessionCombo = 1;
+      comboTimer = 0;
+      novaCooldown = 0;
+      particles = [];
+      floatingTexts = [];
+
+      document.getElementById('gameOverOverlay').classList.add('hidden');
+      document.getElementById('levelUpOverlay').classList.add('hidden');
+
+      if (currentMode === 'swarm') {
+        const maxHp = 100 + (saveData.upgrades.shield - 1) * 25;
+        swarm = {
+          player: { x: cw / 2, y: ch / 2, r: 15, hp: maxHp, maxHp: maxHp, speed: 3.8, angle: 0 },
+          level: 1,
+          xp: 0,
+          xpNeeded: 40,
+          wave: 1,
+          waveTimer: 0,
+          fireCooldown: 0,
+          orbitalAngle: 0,
+          lightningCooldown: 0,
+          weapons: {
+            blasterLvl: 1,
+            orbitals: 1,
+            spreadShot: 0,
+            chainLightning: 0,
+            droneBuddy: 0,
+            regenAura: 0
+          },
+          bullets: [],
+          enemies: [],
+          gems: []
+        };
+        // Spawn initial fun wave immediately
+        for (let i = 0; i < 5; i++) spawnSwarmEnemy();
+      } else if (currentMode === 'merge') {
+        mergeGame = {
+          orbs: [],
+          dropX: cw / 2,
+          currentTier: 0,
+          nextTier: Math.floor(Math.random() * 3),
+          dropCooldown: 0,
+          mergesCount: 0,
+          dangerTimer: 0
+        };
+      } else if (currentMode === 'stack') {
+        const baseW = Math.min(220, cw * 0.45) + (saveData.upgrades.shield - 1) * 10;
+        stackGame = {
+          blocks: [
+            { x: (cw - baseW) / 2, y: ch - 45, w: baseW, h: 26, color: SKINS[saveData.activeSkin].primary }
+          ],
+          debris: [],
+          movingBlock: null,
+          level: 1,
+          perfectStreak: 0,
+          cameraY: 0,
+          baseWidth: baseW,
+          blockHeight: 26
+        };
+        spawnNextStackBlock();
+      } else if (currentMode === 'breaker') {
+        const padW = 125 + (saveData.upgrades.shield - 1) * 14;
+        breakerGame = {
+          paddle: { x: (cw - padW) / 2, w: padW, h: 14 },
+          balls: [{ x: cw / 2, y: ch - 70, vx: 4.2, vy: -4.6, r: 8 }],
+          bricks: [],
+          powerDrops: [],
+          wave: 1,
+          ClearedCount: 0
+        };
+        buildBreakerBricks();
+      } else if (currentMode === 'runner') {
+        runnerGame = {
+          player: { x: 100, y: ch - 95, vy: 0, size: 24, gravDir: 1, jumpsLeft: 2, angle: 0, trail: [] },
+          obstacles: [],
+          orbs: [],
+          speed: 5.5,
+          distance: 0,
+          spawnTimer: 0,
+          floorY: ch - 65,
+          ceilY: 65
+        };
+      } else if (currentMode === 'aim') {
+        aimGame = {
+          targets: [],
+          spawnTimer: 0,
+          hits: 0,
+          clicks: 0,
+          avgReactionMs: 260,
+          life: 100
+        };
+        for (let i = 0; i < 3; i++) spawnAimTarget();
+      }
+
+      updateTopBarUI();
+      updateHudBar();
+      renderLoadoutSidebar();
+    }
+
+    function updateHudBar() {
+      const leftEl = document.getElementById('hudStatusLeft');
+      const rightEl = document.getElementById('hudStatusRight');
+      const fillEl = document.getElementById('xpBarFill');
+      const specialBtn = document.getElementById('specialSkillBtn');
+
+      if (currentMode === 'swarm') {
+        leftEl.textContent = `LVL ${swarm.level} • Wave ${swarm.wave} • ❤️ ${Math.ceil(swarm.player.hp)}`;
+        rightEl.textContent = `XP ${Math.floor(swarm.xp)}/${swarm.xpNeeded}`;
+        const pct = Math.min(100, (swarm.xp / swarm.xpNeeded) * 100);
+        fillEl.style.width = `${pct}%`;
+        specialBtn.textContent = novaCooldown > 0 ? `⏳ NOVA (${Math.ceil(novaCooldown / 60)}s)` : '💥 NOVA BLAST [SPACE]';
+      } else if (currentMode === 'merge') {
+        const nextPlanet = PLANET_TIERS[mergeGame.nextTier];
+        leftEl.textContent = `Merges: ${mergeGame.mergesCount}`;
+        rightEl.textContent = `Next: ${nextPlanet.emoji} ${nextPlanet.name}`;
+        fillEl.style.width = `${Math.min(100, (mergeGame.mergesCount % 10) * 10)}%`;
+        specialBtn.textContent = novaCooldown > 0 ? `⏳ SHAKE (${Math.ceil(novaCooldown / 60)}s)` : '🌪️ GRAVITY SHAKE [SPACE]';
+      } else if (currentMode === 'stack') {
+        leftEl.textContent = `Tower Floor: ${stackGame.level}`;
+        rightEl.textContent = `Perfect Streak: 🔥 ${stackGame.perfectStreak}`;
+        fillEl.style.width = `${Math.min(100, (stackGame.level % 15) * 6.6)}%`;
+        specialBtn.textContent = novaCooldown > 0 ? `⏳ MAGNET (${Math.ceil(novaCooldown / 60)}s)` : '🧲 AUTO-LOCK [SPACE]';
+      } else if (currentMode === 'breaker') {
+        leftEl.textContent = `Wave ${breakerGame.wave} • Balls: ${breakerGame.balls.length}`;
+        rightEl.textContent = `Bricks Left: ${breakerGame.bricks.length}`;
+        fillEl.style.width = `${Math.max(5, 100 - breakerGame.bricks.length * 2.5)}%`;
+        specialBtn.textContent = novaCooldown > 0 ? `⏳ MULTI-BALL (${Math.ceil(novaCooldown / 60)}s)` : '⚽ +2 BALLS [SPACE]';
+      } else if (currentMode === 'runner') {
+        leftEl.textContent = `Distance: ${Math.floor(runnerGame.distance)}m`;
+        rightEl.textContent = `Speed: ${(runnerGame.speed / 5.5).toFixed(1)}x`;
+        fillEl.style.width = `${Math.min(100, (runnerGame.distance % 500) / 5)}%`;
+        specialBtn.textContent = '🔄 FLIP GRAVITY [SPACE]';
+      } else if (currentMode === 'aim') {
+        const acc = aimGame.clicks > 0 ? Math.round((aimGame.hits / aimGame.clicks) * 100) : 100;
+        leftEl.textContent = `Hits: ${aimGame.hits} • Acc: ${acc}%`;
+        rightEl.textContent = `❤️ Integrity: ${Math.ceil(aimGame.life)}%`;
+        fillEl.style.width = `${Math.max(0, aimGame.life)}%`;
+        specialBtn.textContent = novaCooldown > 0 ? `⏳ SNIPE (${Math.ceil(novaCooldown / 60)}s)` : '🎯 AUTO-SNIPE [SPACE]';
+      }
+    }
+
+    // =========================================================================
+    // MODE 1: SWARM SURVIVOR LOGIC
+    // =========================================================================
+    function spawnSwarmEnemy(forceBoss = false) {
+      const edge = Math.floor(Math.random() * 4);
+      let x = 0, y = 0;
+      if (edge === 0) { x = Math.random() * cw; y = -25; }
+      else if (edge === 1) { x = cw + 25; y = Math.random() * ch; }
+      else if (edge === 2) { x = Math.random() * cw; y = ch + 25; }
+      else { x = -25; y = Math.random() * ch; }
+
+      if (forceBoss) {
+        swarm.enemies.push({
+          x, y,
+          r: 28,
+          hp: 140 + swarm.wave * 65,
+          maxHp: 140 + swarm.wave * 65,
+          speed: 1.15 + Math.min(1.1, swarm.wave * 0.06),
+          type: 'boss',
+          color: '#f43f5e',
+          pts: 350
+        });
+        showToast(`🚨 BOSS INCOMING: Cyber Titan (Wave ${swarm.wave})!`);
+        return;
+      }
+
+      const roll = Math.random();
+      let type = 'chaser';
+      let r = 12;
+      let hp = 16 + swarm.wave * 6;
+      let speed = 1.45 + Math.random() * 0.6 + Math.min(1.5, swarm.wave * 0.08);
+      let color = '#fb7185';
+      let pts = 25;
+
+      if (roll > 0.78 && swarm.wave >= 2) {
+        type = 'speedster';
+        r = 9;
+        hp = 10 + swarm.wave * 4;
+        speed = 2.55 + Math.min(1.6, swarm.wave * 0.1);
+        color = '#facc15';
+        pts = 35;
+      } else if (roll > 0.9 && swarm.wave >= 3) {
+        type = 'tank';
+        r = 18;
+        hp = 45 + swarm.wave * 15;
+        speed = 1.0 + Math.min(0.8, swarm.wave * 0.05);
+        color = '#c084fc';
+        pts = 60;
+      }
+
+      swarm.enemies.push({ x, y, r, hp, maxHp: hp, speed, type, color, pts });
+    }
+
+    function triggerLevelUpChoices() {
+      isLevelUpModal = true;
+      playSound('levelup');
+      const overlay = document.getElementById('levelUpOverlay');
+      const container = document.getElementById('upgradeChoicesContainer');
+      overlay.classList.remove('hidden');
+      container.innerHTML = '';
+
+      const pool = [
+        {
+          id: 'orbitals',
+          icon: '🛡️',
+          title: 'Plasma Orbitals +1',
+          desc: 'आपके चारों ओर घूमने वाले लेज़र शील्ड गोले बढ़ेंगे',
+          apply: () => { swarm.weapons.orbitals += 1; }
+        },
+        {
+          id: 'spreadShot',
+          icon: '🔱',
+          title: 'Multi-Spread Cannon',
+          desc: 'एक साथ कई दिशाओं में नियोन गोलियां चलाएं',
+          apply: () => { swarm.weapons.spreadShot += 1; }
+        },
+        {
+          id: 'blasterLvl',
+          icon: '🔫',
+          title: 'Overdrive Fire Rate',
+          desc: 'फायरिंग स्पीड और बुलेट डैमेज +30% तेज़',
+          apply: () => { swarm.weapons.blasterLvl += 1; }
+        },
+        {
+          id: 'chainLightning',
+          icon: '⚡',
+          title: 'Tesla Chain Lightning',
+          desc: 'दुश्मनों पर अपने-आप बिजली गिराने वाला वेपन',
+          apply: () => { swarm.weapons.chainLightning += 1; }
+        },
+        {
+          id: 'droneBuddy',
+          icon: '🤖',
+          title: 'Cyber Attack Drone',
+          desc: 'आपका साथी ड्रोन जो निशाना लगाकर फायर करेगा',
+          apply: () => { swarm.weapons.droneBuddy += 1; }
+        },
+        {
+          id: 'regenAura',
+          icon: '💚',
+          title: 'Nano Hull Repair +50 HP',
+          desc: 'तुरंत हेल्थ रिकवर करें और ऑटो-हीलिंग चालू करें',
+          apply: () => {
+            swarm.weapons.regenAura += 1;
+            swarm.player.hp = Math.min(swarm.player.maxHp, swarm.player.hp + 50);
+          }
+        }
+      ];
+
+      // Shuffle and pick 3
+      const choices = pool.sort(() => Math.random() - 0.5).slice(0, 3);
+      choices.forEach(c => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'p-3.5 rounded-2xl bg-slate-900/95 hover:bg-slate-800 border-2 border-cyan-400/50 hover:border-cyan-300 text-left flex flex-col justify-between transition transform hover:-translate-y-1 shadow-lg';
+        btn.innerHTML = `
+          <div>
+            <div class="text-2xl mb-1">${c.icon}</div>
+            <div class="font-black text-sm text-cyan-300 mb-1">${c.title}</div>
+            <div class="text-xs text-slate-300">${c.desc}</div>
+          </div>
+          <div class="mt-3 text-[11px] font-extrabold text-amber-300 uppercase">Select Upgrade →</div>
+        `;
+        btn.addEventListener('click', () => {
+          c.apply();
+          overlay.classList.add('hidden');
+          isLevelUpModal = false;
+          spawnParticles(swarm.player.x, swarm.player.y, '#22d3ee', 24, 1.4);
+          renderLoadoutSidebar();
+          updateHudBar();
+        });
+        container.appendChild(btn);
+      });
+    }
+
+    function updateSwarmMode() {
+      const p = swarm.player;
+      const skin = SKINS[saveData.activeSkin];
+
+      // Movement via keyboard or pointer
+      let vx = 0, vy = 0;
+      if (keys.ArrowLeft || keys.KeyA) vx -= 1;
+      if (keys.ArrowRight || keys.KeyD) vx += 1;
+      if (keys.ArrowUp || keys.KeyW) vy -= 1;
+      if (keys.ArrowDown || keys.KeyS) vy += 1;
+
+      if (vx !== 0 || vy !== 0) {
+        const len = Math.hypot(vx, vy);
+        p.x += (vx / len) * p.speed;
+        p.y += (vy / len) * p.speed;
+        p.angle = Math.atan2(vy, vx);
+      } else if (pointer.active) {
+        const dx = pointer.x - p.x;
+        const dy = pointer.y - p.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist > 8) {
+          p.x += (dx / dist) * Math.min(p.speed, dist * 0.16);
+          p.y += (dy / dist) * Math.min(p.speed, dist * 0.16);
+          p.angle = Math.atan2(dy, dx);
+        }
+      }
+
+      p.x = Math.max(p.r, Math.min(cw - p.r, p.x));
+      p.y = Math.max(p.r, Math.min(ch - p.r, p.y));
+
+      // Passive Nano Regen
+      if (swarm.weapons.regenAura > 0 && p.hp < p.maxHp) {
+        p.hp = Math.min(p.maxHp, p.hp + 0.03 * swarm.weapons.regenAura);
+      }
+
+      // Wave progression & spawning
+      swarm.waveTimer++;
+      if (swarm.waveTimer % 900 === 0) {
+        swarm.wave++;
+        spawnSwarmEnemy(true); // Boss every wave milestone
+      }
+      const spawnInterval = Math.max(22, 68 - swarm.wave * 4);
+      if (swarm.waveTimer % spawnInterval === 0 && swarm.enemies.length < 48) {
+        spawnSwarmEnemy(false);
+      }
+
+      // Auto-target nearest enemy & shoot
+      swarm.fireCooldown--;
+      const fireDelay = Math.max(7, Math.round(22 / (1 + (swarm.weapons.blasterLvl - 1) * 0.25 + (saveData.upgrades.firepower - 1) * 0.15)));
+      if (swarm.fireCooldown <= 0 && swarm.enemies.length > 0) {
+        let nearest = null;
+        let bestDist = Infinity;
+        for (const e of swarm.enemies) {
+          const d = Math.hypot(e.x - p.x, e.y - p.y);
+          if (d < bestDist) {
+            bestDist = d;
+            nearest = e;
+          }
+        }
+        if (nearest) {
+          const baseAng = Math.atan2(nearest.y - p.y, nearest.x - p.x);
+          const totalShots = 1 + swarm.weapons.spreadShot * 2;
+          const spreadStep = 0.16;
+          for (let i = 0; i < totalShots; i++) {
+            const offset = (i - (totalShots - 1) / 2) * spreadStep;
+            const ang = baseAng + offset;
+            swarm.bullets.push({
+              x: p.x + Math.cos(ang) * 14,
+              y: p.y + Math.sin(ang) * 14,
+              vx: Math.cos(ang) * 8.5,
+              vy: Math.sin(ang) * 8.5,
+              dmg: (14 + swarm.weapons.blasterLvl * 5) * (1 + (saveData.upgrades.firepower - 1) * 0.2),
+              r: 4.5,
+              color: skin.primary
+            });
+          }
+          // Drone buddy bonus shot
+          if (swarm.weapons.droneBuddy > 0) {
+            const dAng = baseAng + 0.08;
+            swarm.bullets.push({
+              x: p.x + Math.cos(swarm.orbitalAngle) * 28,
+              y: p.y + Math.sin(swarm.orbitalAngle) * 28,
+              vx: Math.cos(dAng) * 9.5,
+              vy: Math.sin(dAng) * 9.5,
+              dmg: 12 * swarm.weapons.droneBuddy,
+              r: 4,
+              color: '#facc15'
+            });
+          }
+          playSound('shoot');
+          swarm.fireCooldown = fireDelay;
+        }
+      }
+
+      // Chain Lightning weapon
+      if (swarm.weapons.chainLightning > 0) {
+        swarm.lightningCooldown--;
+        if (swarm.lightningCooldown <= 0 && swarm.enemies.length > 0) {
+          const targets = swarm.enemies.slice(0, 1 + swarm.weapons.chainLightning);
+          targets.forEach(t => {
+            t.hp -= 22 * swarm.weapons.chainLightning;
+            spawnParticles(t.x, t.y, '#38bdf8', 7, 1.2);
+            addFloatingText(t.x, t.y - 10, '⚡ ZAP!', '#38bdf8', 12);
+          });
+          swarm.lightningCooldown = 85;
+        }
+      }
+
+      // Update Bullets
+      for (let i = swarm.bullets.length - 1; i >= 0; i--) {
+        const b = swarm.bullets[i];
+        b.x += b.vx;
+        b.y += b.vy;
+        if (b.x < -20 || b.x > cw + 20 || b.y < -20 || b.y > ch + 20) {
+          swarm.bullets.splice(i, 1);
+          continue;
+        }
+        for (let j = swarm.enemies.length - 1; j >= 0; j--) {
+          const e = swarm.enemies[j];
+          if (Math.hypot(b.x - e.x, b.y - e.y) < b.r + e.r) {
+            e.hp -= b.dmg;
+            spawnParticles(b.x, b.y, b.color, 4, 0.7);
+            swarm.bullets.splice(i, 1);
+            break;
+          }
+        }
+      }
+
+      // Orbitals rotation & collision
+      swarm.orbitalAngle += 0.065;
+      const orbCount = swarm.weapons.orbitals;
+      const orbRadius = 46;
+      const orbPositions = [];
+      for (let k = 0; k < orbCount; k++) {
+        const a = swarm.orbitalAngle + (k * Math.PI * 2) / orbCount;
+        orbPositions.push({
+          x: p.x + Math.cos(a) * orbRadius,
+          y: p.y + Math.sin(a) * orbRadius
+        });
+      }
+
+      // Update Enemies
+      for (let i = swarm.enemies.length - 1; i >= 0; i--) {
+        const e = swarm.enemies[i];
+        const ang = Math.atan2(p.y - e.y, p.x - e.x);
+        e.x += Math.cos(ang) * e.speed;
+        e.y += Math.sin(ang) * e.speed;
+
+        // Check orbital shield hit
+        for (const op of orbPositions) {
+          if (Math.hypot(op.x - e.x, op.y - e.y) < e.r + 8) {
+            e.hp -= 1.8 + swarm.weapons.orbitals * 0.6;
+            spawnParticles(e.x, e.y, skin.secondary, 1, 0.5);
+          }
+        }
+
+        // Check enemy death
+        if (e.hp <= 0) {
+          playSound('hit');
+          bumpCombo(1);
+          const ptsGained = Math.round(e.pts * combo);
+          score += ptsGained;
+          spawnParticles(e.x, e.y, e.color, e.type === 'boss' ? 32 : 12, 1.2);
+          addFloatingText(e.x, e.y, `+${ptsGained}`, '#facc15', e.type === 'boss' ? 18 : 13);
+
+          // Drop XP & Coin Gem
+          swarm.gems.push({
+            x: e.x,
+            y: e.y,
+            xp: e.type === 'boss' ? 45 : 12,
+            coins: e.type === 'boss' ? 18 : (Math.random() < 0.45 ? 3 : 1),
+            r: e.type === 'boss' ? 9 : 5.5
+          });
+
+          if (e.type === 'boss') {
+            screenShake = 12;
+          }
+          swarm.enemies.splice(i, 1);
+          continue;
+        }
+
+        // Check player collision
+        if (Math.hypot(e.x - p.x, e.y - p.y) < e.r + p.r) {
+          p.hp -= e.type === 'boss' ? 18 : 9;
+          screenShake = 7;
+          playSound('hit');
+          spawnParticles(p.x, p.y, '#f43f5e', 10, 1.1);
+          if (e.type !== 'boss') {
+            swarm.enemies.splice(i, 1);
+          } else {
+            e.x -= Math.cos(ang) * 28;
+            e.y -= Math.sin(ang) * 28;
+          }
+          if (p.hp <= 0) {
+            triggerGameOver('HULL BREACHED!', 'साइबर स्वार्म ने आपके शिप को घेर लिया! अपने कॉइन्स से पावर बढ़ाएं और फिर उतरें।');
+            return;
+          }
+        }
+      }
+
+      // Update Gems (Magnet collection)
+      const magnetRadius = 78 + (saveData.upgrades.magnet - 1) * 32;
+      for (let i = swarm.gems.length - 1; i >= 0; i--) {
+        const g = swarm.gems[i];
+        const d = Math.hypot(p.x - g.x, p.y - g.y);
+        if (d < magnetRadius) {
+          g.x += ((p.x - g.x) / d) * 6.5;
+          g.y += ((p.y - g.y) / d) * 6.5;
+        }
+        if (d < p.r + g.r + 6) {
+          swarm.xp += g.xp;
+          awardCoins(g.coins);
+          playSound('coin');
+          swarm.gems.splice(i, 1);
+
+          if (swarm.xp >= swarm.xpNeeded) {
+            swarm.xp -= swarm.xpNeeded;
+            swarm.level++;
+            swarm.xpNeeded = Math.round(swarm.xpNeeded * 1.35);
+            updateMissionProgress('m_swarm_lvl', swarm.level, true);
+            triggerLevelUpChoices();
+          }
+        }
+      }
+    }
+
+    function drawSwarmMode() {
+      const p = swarm.player;
+      const skin = SKINS[saveData.activeSkin];
+
+      // Subtle Cyber Grid
+      ctx.strokeStyle = 'rgba(30, 41, 59, 0.55)';
+      ctx.lineWidth = 1;
+      const gridStep = 45;
+      for (let x = 0; x < cw; x += gridStep) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, ch); ctx.stroke();
+      }
+      for (let y = 0; y < ch; y += gridStep) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(cw, y); ctx.stroke();
+      }
+
+      // Draw Gems
+      for (const g of swarm.gems) {
+        ctx.save();
+        ctx.fillStyle = '#38bdf8';
+        ctx.shadowColor = '#38bdf8';
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.arc(g.x, g.y, g.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // Draw Bullets
+      for (const b of swarm.bullets) {
+        ctx.save();
+        ctx.fillStyle = b.color;
+        ctx.shadowColor = b.color;
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // Draw Enemies
+      for (const e of swarm.enemies) {
+        ctx.save();
+        ctx.fillStyle = e.color;
+        ctx.shadowColor = e.color;
+        ctx.shadowBlur = e.type === 'boss' ? 18 : 8;
+        ctx.beginPath();
+        if (e.type === 'speedster') {
+          ctx.moveTo(e.x, e.y - e.r);
+          ctx.lineTo(e.x + e.r, e.y + e.r);
+          ctx.lineTo(e.x - e.r, e.y + e.r);
+          ctx.closePath();
+        } else {
+          ctx.arc(e.x, e.y, e.r, 0, Math.PI * 2);
+        }
+        ctx.fill();
+
+        // Boss/Tank mini HP bar
+        if (e.hp < e.maxHp) {
+          ctx.fillStyle = '#0f172a';
+          ctx.fillRect(e.x - e.r, e.y - e.r - 8, e.r * 2, 4);
+          ctx.fillStyle = '#22c55e';
+          ctx.fillRect(e.x - e.r, e.y - e.r - 8, (e.r * 2) * (e.hp / e.maxHp), 4);
+        }
+        ctx.restore();
+      }
+
+      // Draw Orbitals
+      const orbCount = swarm.weapons.orbitals;
+      for (let k = 0; k < orbCount; k++) {
+        const a = swarm.orbitalAngle + (k * Math.PI * 2) / orbCount;
+        const ox = p.x + Math.cos(a) * 46;
+        const oy = p.y + Math.sin(a) * 46;
+        ctx.save();
+        ctx.fillStyle = skin.secondary;
+        ctx.shadowColor = skin.secondary;
+        ctx.shadowBlur = 12;
+        ctx.beginPath();
+        ctx.arc(ox, oy, 7, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // Draw Player Ship
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.angle);
+      ctx.fillStyle = skin.primary;
+      ctx.shadowColor = skin.primary;
+      ctx.shadowBlur = 16;
+      ctx.beginPath();
+      ctx.moveTo(18, 0);
+      ctx.lineTo(-12, -12);
+      ctx.lineTo(-7, 0);
+      ctx.lineTo(-12, 12);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+
+      // Player HP Ring
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r + 7, 0, Math.PI * 2);
+      ctx.stroke();
+
+      const hpRatio = Math.max(0, p.hp / p.maxHp);
+      ctx.strokeStyle = hpRatio > 0.4 ? '#22c55e' : '#f43f5e';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r + 7, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * hpRatio);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // =========================================================================
+    // MODE 2: COSMO MERGE (SUIKA PHYSICS) LOGIC
+    // =========================================================================
+    function getMergeBoxBounds() {
+      const boxW = Math.min(360, cw - 36);
+      const left = (cw - boxW) / 2;
+      const right = left + boxW;
+      const top = 74;
+      const bottom = ch - 24;
+      return { left, right, top, bottom, boxW };
+    }
+
+    function dropMergeOrb() {
+      if (mergeGame.dropCooldown > 0 || isGameOver) return;
+      const bounds = getMergeBoxBounds();
+      const tier = PLANET_TIERS[mergeGame.currentTier];
+      const clampedX = Math.max(bounds.left + tier.r + 4, Math.min(bounds.right - tier.r - 4, mergeGame.dropX));
+
+      mergeGame.orbs.push({
+        x: clampedX,
+        y: bounds.top + 10,
+        vx: (Math.random() - 0.5) * 0.6,
+        vy: 1.5,
+        tier: mergeGame.currentTier,
+        r: tier.r,
+        settledFrames: 0
+      });
+
+      playSound('shoot');
+      mergeGame.currentTier = mergeGame.nextTier;
+      mergeGame.nextTier = Math.floor(Math.random() * 3); // first 3 tiers droppable
+      mergeGame.dropCooldown = 22;
+      updateHudBar();
+    }
+
+    function updateMergeMode() {
+      const bounds = getMergeBoxBounds();
+      if (mergeGame.dropCooldown > 0) mergeGame.dropCooldown--;
+
+      // Keyboard movement of drop cursor
+      if (keys.ArrowLeft || keys.KeyA) mergeGame.dropX -= 5;
+      if (keys.ArrowRight || keys.KeyD) mergeGame.dropX += 5;
+      if (pointer.active) mergeGame.dropX = pointer.x;
+      mergeGame.dropX = Math.max(bounds.left + 22, Math.min(bounds.right - 22, mergeGame.dropX));
+
+      // Physics steps
+      const gravity = 0.36;
+      for (const o of mergeGame.orbs) {
+        o.vy += gravity;
+        o.x += o.vx;
+        o.y += o.vy;
+        o.vx *= 0.99;
+        o.settledFrames++;
+
+        // Container walls
+        if (o.x - o.r < bounds.left) { o.x = bounds.left + o.r; o.vx = Math.abs(o.vx) * 0.5; }
+        if (o.x + o.r > bounds.right) { o.x = bounds.right - o.r; o.vx = -Math.abs(o.vx) * 0.5; }
+        if (o.y + o.r > bounds.bottom) {
+          o.y = bounds.bottom - o.r;
+          o.vy = -Math.abs(o.vy) * 0.25;
+          o.vx *= 0.92;
+        }
+      }
+
+      // Pairwise collision & identical planet merge
+      for (let iter = 0; iter < 3; iter++) {
+        for (let i = 0; i < mergeGame.orbs.length; i++) {
+          for (let j = i + 1; j < mergeGame.orbs.length; j++) {
+            const a = mergeGame.orbs[i];
+            const b = mergeGame.orbs[j];
+            if (!a || !b) continue;
+            const dx = b.x - a.x;
+            const dy = b.y - a.y;
+            const dist = Math.hypot(dx, dy);
+            const minDist = a.r + b.r;
+
+            if (dist < minDist && dist > 0.001) {
+              // Same tier => MERGE!
+              if (a.tier === b.tier && a.tier < PLANET_TIERS.length - 1) {
+                const newTierIdx = a.tier + 1;
+                const newSpec = PLANET_TIERS[newTierIdx];
+                const mx = (a.x + b.x) / 2;
+                const my = (a.y + b.y) / 2;
+
+                mergeGame.orbs.splice(j, 1);
+                mergeGame.orbs.splice(i, 1);
+                mergeGame.orbs.push({
+                  x: mx,
+                  y: my,
+                  vx: 0,
+                  vy: -1.5,
+                  tier: newTierIdx,
+                  r: newSpec.r,
+                  settledFrames: 0
+                });
+
+                mergeGame.mergesCount++;
+                bumpCombo(1.5);
+                const gainedPts = Math.round(newSpec.pts * combo * (1 + (saveData.upgrades.firepower - 1) * 0.2));
+                score += gainedPts;
+                awardCoins(newTierIdx + 2);
+                playSound('merge');
+                spawnParticles(mx, my, newSpec.color, 18, 1.3);
+                addFloatingText(mx, my, `${newSpec.emoji} +${gainedPts}`, newSpec.color, 15);
+                updateMissionProgress('m_merge_planet', 1, false);
+                break;
+              } else {
+                // Separate overlapping orbs
+                const overlap = (minDist - dist) * 0.52;
+                const nx = dx / dist;
+                const ny = dy / dist;
+                a.x -= nx * overlap;
+                a.y -= ny * overlap;
+                b.x += nx * overlap;
+                b.y += ny * overlap;
+
+                // Exchange momentum softly
+                const rvx = b.vx - a.vx;
+                const rvy = b.vy - a.vy;
+                const velAlongNormal = rvx * nx + rvy * ny;
+                if (velAlongNormal < 0) {
+                  const impulse = velAlongNormal * 0.45;
+                  a.vx += impulse * nx;
+                  a.vy += impulse * ny;
+                  b.vx -= impulse * nx;
+                  b.vy -= impulse * ny;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Check overflow danger line
+      let overflowing = false;
+      for (const o of mergeGame.orbs) {
+        if (o.settledFrames > 55 && o.y - o.r < bounds.top + 12) {
+          overflowing = true;
+          break;
+        }
+      }
+      if (overflowing) {
+        mergeGame.dangerTimer++;
+        if (mergeGame.dangerTimer > 110) {
+          triggerGameOver('CONTAINER FULL!', 'प्लैनेट्स टॉप लाइन से ऊपर पहुंच गए! अगली बार बड़े प्लैनेट्स को एक साइड में मर्ज करें।');
+        }
+      } else {
+        mergeGame.dangerTimer = Math.max(0, mergeGame.dangerTimer - 2);
+      }
+    }
+
+    function drawMergeMode() {
+      const bounds = getMergeBoxBounds();
+      const skin = SKINS[saveData.activeSkin];
+
+      // Draw Glass Container
+      ctx.save();
+      ctx.strokeStyle = skin.primary;
+      ctx.lineWidth = 3;
+      ctx.shadowColor = skin.primary;
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.moveTo(bounds.left, bounds.top);
+      ctx.lineTo(bounds.left, bounds.bottom);
+      ctx.lineTo(bounds.right, bounds.bottom);
+      ctx.lineTo(bounds.right, bounds.top);
+      ctx.stroke();
+
+      // Danger Dashed Line
+      ctx.strokeStyle = mergeGame.dangerTimer > 0 ? '#f43f5e' : 'rgba(248, 113, 113, 0.4)';
+      ctx.setLineDash([6, 6]);
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(bounds.left, bounds.top + 12);
+      ctx.lineTo(bounds.right, bounds.top + 12);
+      ctx.stroke();
+      ctx.restore();
+
+      // Draw Aiming Preview Orb & Guide Line
+      const previewSpec = PLANET_TIERS[mergeGame.currentTier];
+      const previewX = Math.max(bounds.left + previewSpec.r + 4, Math.min(bounds.right - previewSpec.r - 4, mergeGame.dropX));
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(previewX, bounds.top);
+      ctx.lineTo(previewX, bounds.bottom);
+      ctx.stroke();
+
+      ctx.setLineDash([]);
+      ctx.fillStyle = previewSpec.color;
+      ctx.globalAlpha = 0.85;
+      ctx.beginPath();
+      ctx.arc(previewX, bounds.top - 18, previewSpec.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.font = `${Math.max(12, previewSpec.r * 0.85)}px Inter`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(previewSpec.emoji, previewX, bounds.top - 18);
+      ctx.restore();
+
+      // Draw Orbs inside container
+      for (const o of mergeGame.orbs) {
+        const spec = PLANET_TIERS[o.tier];
+        ctx.save();
+        ctx.fillStyle = spec.color;
+        ctx.shadowColor = spec.color;
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.font = `${Math.max(13, o.r * 0.85)}px Inter`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(spec.emoji, o.x, o.y);
+        ctx.restore();
+      }
+    }
+
+    // =========================================================================
+    // MODE 3: NEON STACK TOWER LOGIC
+    // =========================================================================
+    function spawnNextStackBlock() {
+      const topBlock = stackGame.blocks[stackGame.blocks.length - 1];
+      const y = topBlock.y - stackGame.blockHeight;
+      const spd = Math.min(7.5, 2.8 + stackGame.level * 0.16);
+      const colors = ['#22d3ee', '#818cf8', '#f472b6', '#facc15', '#34d399', '#fb923c'];
+      const color = colors[stackGame.level % colors.length];
+
+      stackGame.movingBlock = {
+        x: Math.random() < 0.5 ? 20 : cw - topBlock.w - 20,
+        y,
+        w: topBlock.w,
+        h: stackGame.blockHeight,
+        vx: Math.random() < 0.5 ? spd : -spd,
+        color
+      };
+    }
+
+    function dropStackBlock(forcePerfect = false) {
+      const mb = stackGame.movingBlock;
+      if (!mb || isGameOver) return;
+      const prev = stackGame.blocks[stackGame.blocks.length - 1];
+
+      if (forcePerfect) {
+        mb.x = prev.x;
+      }
+
+      const diff = mb.x - prev.x;
+      const absDiff = Math.abs(diff);
+      const tolerance = 6 + (saveData.upgrades.shield - 1) * 1.5;
+
+      if (absDiff <= tolerance) {
+        // PERFECT SNAP!
+        mb.x = prev.x;
+        stackGame.perfectStreak++;
+        bumpCombo(2);
+
+        // Expand width slightly on 3+ streak
+        if (stackGame.perfectStreak >= 3 && mb.w < stackGame.baseWidth) {
+          mb.w = Math.min(stackGame.baseWidth, mb.w + 14);
+          addFloatingText(mb.x + mb.w / 2, mb.y, '🌟 STREAK EXPAND!', '#34d399', 15);
+        } else {
+          addFloatingText(mb.x + mb.w / 2, mb.y, `⚡ PERFECT x${stackGame.perfectStreak}!`, '#facc15', 15);
+        }
+
+        stackGame.blocks.push({ ...mb });
+        playSound('levelup');
+        spawnParticles(mb.x + mb.w / 2, mb.y, mb.color, 20, 1.3);
+      } else if (absDiff < mb.w) {
+        // Partial overlap slice
+        stackGame.perfectStreak = 0;
+        const overlapW = mb.w - absDiff;
+        const newX = diff > 0 ? mb.x : prev.x;
+
+        // Spawn falling sliced debris
+        const cutX = diff > 0 ? prev.x + prev.w : mb.x;
+        stackGame.debris.push({
+          x: cutX,
+          y: mb.y,
+          w: absDiff,
+          h: mb.h,
+          vy: 1,
+          color: mb.color
+        });
+
+        stackGame.blocks.push({
+          x: newX,
+          y: mb.y,
+          w: overlapW,
+          h: mb.h,
+          color: mb.color
+        });
+        playSound('merge');
+        bumpCombo(0.5);
+        spawnParticles(newX + overlapW / 2, mb.y, mb.color, 10, 0.9);
+      } else {
+        // Missed completely
+        playSound('gameover');
+        triggerGameOver('TOWER COLLAPSED!', `आपने ${stackGame.level} मंजिल का शानदार टावर बनाया! क्या आप इसे और ऊंचा ले जा सकते हैं?`);
+        return;
+      }
+
+      const gained = Math.round(45 * combo * (1 + (saveData.upgrades.firepower - 1) * 0.2));
+      score += gained;
+      awardCoins(3);
+      stackGame.level++;
+      updateMissionProgress('m_stack_tower', stackGame.level, true);
+      spawnNextStackBlock();
+      updateHudBar();
+    }
+
+    function updateStackMode() {
+      const mb = stackGame.movingBlock;
+      if (mb) {
+        mb.x += mb.vx;
+        if (mb.x <= 15) { mb.x = 15; mb.vx = Math.abs(mb.vx); }
+        if (mb.x + mb.w >= cw - 15) { mb.x = cw - 15 - mb.w; mb.vx = -Math.abs(mb.vx); }
+      }
+
+      // Smooth camera scroll upward when tower grows tall
+      const topBlock = stackGame.blocks[stackGame.blocks.length - 1];
+      const desiredScreenY = ch * 0.55;
+      if (topBlock && topBlock.y + stackGame.cameraY < desiredScreenY) {
+        stackGame.cameraY += (desiredScreenY - (topBlock.y + stackGame.cameraY)) * 0.12;
+      }
+
+      // Update falling debris
+      for (let i = stackGame.debris.length - 1; i >= 0; i--) {
+        const d = stackGame.debris[i];
+        d.vy += 0.45;
+        d.y += d.vy;
+        if (d.y + stackGame.cameraY > ch + 60) {
+          stackGame.debris.splice(i, 1);
+        }
+      }
+    }
+
+    function drawStackMode() {
+      ctx.save();
+      ctx.translate(0, stackGame.cameraY);
+
+      // Draw stacked blocks
+      for (let i = 0; i < stackGame.blocks.length; i++) {
+        const b = stackGame.blocks[i];
+        ctx.fillStyle = b.color;
+        ctx.shadowColor = b.color;
+        ctx.shadowBlur = 10;
+        ctx.fillRect(b.x, b.y, b.w, b.h - 2);
+      }
+
+      // Draw falling sliced debris
+      for (const d of stackGame.debris) {
+        ctx.fillStyle = d.color;
+        ctx.globalAlpha = 0.7;
+        ctx.fillRect(d.x, d.y, d.w, d.h - 2);
+        ctx.globalAlpha = 1;
+      }
+
+      // Draw active moving block
+      const mb = stackGame.movingBlock;
+      if (mb) {
+        ctx.fillStyle = mb.color;
+        ctx.shadowColor = '#ffffff';
+        ctx.shadowBlur = 14;
+        ctx.fillRect(mb.x, mb.y, mb.w, mb.h - 2);
+      }
+
+      ctx.restore();
+    }
+
+    // =========================================================================
+    // MODE 4: CYBER BRICK BREAKER (NEON ARKANOID) LOGIC
+    // =========================================================================
+    function buildBreakerBricks() {
+      breakerGame.bricks = [];
+      const cols = Math.max(6, Math.min(9, Math.floor((cw - 60) / 78)));
+      const rows = 4 + Math.min(3, breakerGame.wave);
+      const padX = 28;
+      const usableW = cw - padX * 2;
+      const bw = Math.floor(usableW / cols) - 8;
+      const bh = 22;
+      const colors = ['#22d3ee', '#818cf8', '#f472b6', '#facc15', '#34d399', '#fb7185'];
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const isBomb = Math.random() < 0.14;
+          breakerGame.bricks.push({
+            x: padX + c * (bw + 8),
+            y: 52 + r * (bh + 8),
+            w: bw,
+            h: bh,
+            hp: isBomb ? 1 : (r === 0 && breakerGame.wave > 1 ? 2 : 1),
+            type: isBomb ? 'explosive' : 'normal',
+            color: isBomb ? '#facc15' : colors[(r + c) % colors.length]
+          });
+        }
+      }
+    }
+
+    function updateBreakerMode() {
+      const pad = breakerGame.paddle;
+      if (keys.ArrowLeft || keys.KeyA) pad.x -= 8.5;
+      if (keys.ArrowRight || keys.KeyD) pad.x += 8.5;
+      if (pointer.active) pad.x = pointer.x - pad.w / 2;
+      pad.x = Math.max(12, Math.min(cw - pad.w - 12, pad.x));
+      const padY = ch - 38;
+
+      // Update powerup drops
+      for (let i = breakerGame.powerDrops.length - 1; i >= 0; i--) {
+        const d = breakerGame.powerDrops[i];
+        d.y += 3.2;
+        if (d.y >= padY && d.y <= padY + pad.h + 12 && d.x >= pad.x && d.x <= pad.x + pad.w) {
+          if (d.kind === 'multiball' && breakerGame.balls.length < 6) {
+            const ref = breakerGame.balls[0] || { x: pad.x + pad.w / 2, y: padY - 12 };
+            breakerGame.balls.push({ x: ref.x, y: ref.y, vx: -4.2, vy: -4.8, r: 8 });
+            breakerGame.balls.push({ x: ref.x, y: ref.y, vx: 4.2, vy: -4.8, r: 8 });
+            addFloatingText(pad.x + pad.w / 2, padY - 10, '⚽ MULTI-BALL!', '#38bdf8', 15);
+          } else {
+            awardCoins(6);
+            addFloatingText(pad.x + pad.w / 2, padY - 10, '🪙 +6 COINS!', '#facc15', 14);
+          }
+          playSound('levelup');
+          breakerGame.powerDrops.splice(i, 1);
+          continue;
+        }
+        if (d.y > ch + 20) breakerGame.powerDrops.splice(i, 1);
+      }
+
+      // Update balls
+      for (let i = breakerGame.balls.length - 1; i >= 0; i--) {
+        const b = breakerGame.balls[i];
+        b.x += b.vx;
+        b.y += b.vy;
+
+        if (b.x - b.r < 8) { b.x = 8 + b.r; b.vx = Math.abs(b.vx); playSound('shoot'); }
+        if (b.x + b.r > cw - 8) { b.x = cw - 8 - b.r; b.vx = -Math.abs(b.vx); playSound('shoot'); }
+        if (b.y - b.r < 8) { b.y = 8 + b.r; b.vy = Math.abs(b.vy); playSound('shoot'); }
+
+        // Paddle bounce
+        if (b.vy > 0 && b.y + b.r >= padY && b.y - b.r <= padY + pad.h && b.x >= pad.x - 6 && b.x <= pad.x + pad.w + 6) {
+          const hitOffset = (b.x - (pad.x + pad.w / 2)) / (pad.w / 2);
+          const speed = Math.min(8.2, Math.hypot(b.vx, b.vy) * 1.02);
+          const angle = hitOffset * 1.05;
+          b.vx = Math.sin(angle) * speed;
+          b.vy = -Math.cos(angle) * speed;
+          b.y = padY - b.r - 1;
+          playSound('shoot');
+          spawnParticles(b.x, padY, '#22d3ee', 6, 0.8);
+        }
+
+        // Brick collisions
+        for (let j = breakerGame.bricks.length - 1; j >= 0; j--) {
+          const br = breakerGame.bricks[j];
+          if (b.x + b.r > br.x && b.x - b.r < br.x + br.w && b.y + b.r > br.y && b.y - b.r < br.y + br.h) {
+            b.vy = -b.vy;
+            br.hp--;
+            if (br.hp <= 0) {
+              playSound('hit');
+              bumpCombo(1);
+              const pts = Math.round((br.type === 'explosive' ? 90 : 40) * combo);
+              score += pts;
+              awardCoins(br.type === 'explosive' ? 3 : 1);
+              spawnParticles(br.x + br.w / 2, br.y + br.h / 2, br.color, 14, 1.2);
+              addFloatingText(br.x + br.w / 2, br.y, `+${pts}`, br.color, 13);
+
+              if (Math.random() < 0.24) {
+                breakerGame.powerDrops.push({
+                  x: br.x + br.w / 2,
+                  y: br.y + br.h / 2,
+                  kind: Math.random() < 0.55 ? 'multiball' : 'coin'
+                });
+              }
+
+              // Explosive chain reaction
+              if (br.type === 'explosive') {
+                screenShake = 8;
+                const cx = br.x + br.w / 2;
+                const cy = br.y + br.h / 2;
+                for (let k = breakerGame.bricks.length - 1; k >= 0; k--) {
+                  if (k === j) continue;
+                  const nb = breakerGame.bricks[k];
+                  if (Math.hypot((nb.x + nb.w / 2) - cx, (nb.y + nb.h / 2) - cy) < 95) {
+                    spawnParticles(nb.x + nb.w / 2, nb.y + nb.h / 2, '#facc15', 8, 1.1);
+                    breakerGame.bricks.splice(k, 1);
+                    if (k < j) j--;
+                  }
+                }
+              }
+              breakerGame.bricks.splice(j, 1);
+            } else {
+              playSound('shoot');
+            }
+            break;
+          }
+        }
+
+        if (b.y - b.r > ch + 20) {
+          breakerGame.balls.splice(i, 1);
+        }
+      }
+
+      if (breakerGame.bricks.length === 0) {
+        breakerGame.wave++;
+        playSound('levelup');
+        awardCoins(25);
+        showToast(`🎉 Wave ${breakerGame.wave} Cleared! +25 Bonus Coins!`);
+        buildBreakerBricks();
+      }
+
+      if (breakerGame.balls.length === 0) {
+        triggerGameOver('ALL BALLS LOST!', 'पैडल से बॉल मिस हो गई! SPACE दबाकर एक्स्ट्रा बॉल स्पॉन करना याद रखें।');
+      }
+    }
+
+    function drawBreakerMode() {
+      const pad = breakerGame.paddle;
+      const padY = ch - 38;
+      const skin = SKINS[saveData.activeSkin];
+
+      // Bricks
+      for (const br of breakerGame.bricks) {
+        ctx.save();
+        ctx.fillStyle = br.color;
+        ctx.shadowColor = br.color;
+        ctx.shadowBlur = br.type === 'explosive' ? 14 : 6;
+        ctx.fillRect(br.x, br.y, br.w, br.h);
+        if (br.type === 'explosive') {
+          ctx.fillStyle = '#0f172a';
+          ctx.font = '900 11px Inter';
+          ctx.textAlign = 'center';
+          ctx.fillText('💥 TNT', br.x + br.w / 2, br.y + 15);
+        }
+        ctx.restore();
+      }
+
+      // Power drops
+      for (const d of breakerGame.powerDrops) {
+        ctx.save();
+        ctx.fillStyle = d.kind === 'multiball' ? '#38bdf8' : '#facc15';
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, 10, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.font = '12px Inter';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(d.kind === 'multiball' ? '⚽' : '🪙', d.x, d.y);
+        ctx.restore();
+      }
+
+      // Paddle
+      ctx.save();
+      ctx.fillStyle = skin.primary;
+      ctx.shadowColor = skin.primary;
+      ctx.shadowBlur = 14;
+      ctx.fillRect(pad.x, padY, pad.w, pad.h);
+      ctx.restore();
+
+      // Balls
+      for (const b of breakerGame.balls) {
+        ctx.save();
+        ctx.fillStyle = '#ffffff';
+        ctx.shadowColor = skin.primary;
+        ctx.shadowBlur = 12;
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    // =========================================================================
+    // MODE 5: PULSE DASH RUNNER (GEOMETRY GRAVITY RUNNER) LOGIC
+    // =========================================================================
+    function jumpRunner() {
+      const p = runnerGame.player;
+      if (p.jumpsLeft > 0) {
+        p.vy = -10.2 * p.gravDir;
+        p.jumpsLeft--;
+        playSound('shoot');
+        spawnParticles(p.x, p.y, '#22d3ee', 10, 1.0);
+      }
+    }
+
+    function updateRunnerMode() {
+      const p = runnerGame.player;
+      runnerGame.floorY = ch - 55;
+      runnerGame.ceilY = 55;
+      runnerGame.speed = Math.min(10.5, 5.5 + runnerGame.distance * 0.0025);
+      runnerGame.distance += runnerGame.speed * 0.12;
+      score += runnerGame.speed * 0.35 * combo;
+
+      // Gravity & vertical physics
+      p.vy += 0.52 * p.gravDir;
+      p.y += p.vy;
+      p.angle += 0.12 * p.gravDir;
+
+      if (p.gravDir === 1 && p.y + p.size / 2 >= runnerGame.floorY) {
+        p.y = runnerGame.floorY - p.size / 2;
+        p.vy = 0;
+        p.jumpsLeft = 2;
+        p.angle = Math.round(p.angle / (Math.PI / 2)) * (Math.PI / 2);
+      } else if (p.gravDir === -1 && p.y - p.size / 2 <= runnerGame.ceilY) {
+        p.y = runnerGame.ceilY + p.size / 2;
+        p.vy = 0;
+        p.jumpsLeft = 2;
+        p.angle = Math.round(p.angle / (Math.PI / 2)) * (Math.PI / 2);
+      }
+
+      // Trail history
+      p.trail.push({ x: p.x, y: p.y });
+      if (p.trail.length > 10) p.trail.shift();
+
+      // Spawn neon spikes & coin rings
+      runnerGame.spawnTimer--;
+      if (runnerGame.spawnTimer <= 0) {
+        const onCeiling = Math.random() < 0.35;
+        const h = 28 + Math.random() * 18;
+        runnerGame.obstacles.push({
+          x: cw + 30,
+          y: onCeiling ? runnerGame.ceilY : runnerGame.floorY - h,
+          w: 24,
+          h,
+          onCeiling
+        });
+        // Spawn bonus orb in mid-air
+        runnerGame.orbs.push({
+          x: cw + 110,
+          y: ch / 2 + (Math.random() - 0.5) * 110,
+          r: 10
+        });
+        runnerGame.spawnTimer = Math.max(34, Math.floor(72 - runnerGame.speed * 3));
+      }
+
+      // Update obstacles
+      for (let i = runnerGame.obstacles.length - 1; i >= 0; i--) {
+        const ob = runnerGame.obstacles[i];
+        ob.x -= runnerGame.speed;
+        if (
+          p.x + p.size / 2 - 4 > ob.x &&
+          p.x - p.size / 2 + 4 < ob.x + ob.w &&
+          p.y + p.size / 2 - 4 > ob.y &&
+          p.y - p.size / 2 + 4 < ob.y + ob.h
+        ) {
+          spawnParticles(p.x, p.y, '#f43f5e', 25, 1.5);
+          triggerGameOver('SPIKE COLLISION!', `आपने ${Math.floor(runnerGame.distance)}m की रफ़्तार भरी दौड़ लगाई! Jump और Gravity Flip [SPACE] का इस्तेमाल करें।`);
+          return;
+        }
+        if (ob.x + ob.w < -20) {
+          runnerGame.obstacles.splice(i, 1);
+          bumpCombo(0.4);
+        }
+      }
+
+      // Update coin orbs
+      for (let i = runnerGame.orbs.length - 1; i >= 0; i--) {
+        const o = runnerGame.orbs[i];
+        o.x -= runnerGame.speed;
+        if (Math.hypot(p.x - o.x, p.y - o.y) < p.size / 2 + o.r + 6) {
+          playSound('coin');
+          bumpCombo(1);
+          awardCoins(3);
+          score += Math.round(60 * combo);
+          spawnParticles(o.x, o.y, '#facc15', 12, 1.1);
+          addFloatingText(o.x, o.y, '+60 ⚡', '#facc15', 14);
+          runnerGame.orbs.splice(i, 1);
+          continue;
+        }
+        if (o.x < -20) runnerGame.orbs.splice(i, 1);
+      }
+    }
+
+    function drawRunnerMode() {
+      const p = runnerGame.player;
+      const skin = SKINS[saveData.activeSkin];
+
+      // Neon Floor & Ceiling Tracks
+      ctx.save();
+      ctx.strokeStyle = skin.primary;
+      ctx.lineWidth = 3;
+      ctx.shadowColor = skin.primary;
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.moveTo(0, runnerGame.floorY);
+      ctx.lineTo(cw, runnerGame.floorY);
+      ctx.moveTo(0, runnerGame.ceilY);
+      ctx.lineTo(cw, runnerGame.ceilY);
+      ctx.stroke();
+      ctx.restore();
+
+      // Draw Trail
+      for (let i = 0; i < p.trail.length; i++) {
+        const t = p.trail[i];
+        ctx.fillStyle = skin.primary;
+        ctx.globalAlpha = (i / p.trail.length) * 0.35;
+        ctx.fillRect(t.x - p.size / 2 - (p.trail.length - i) * 3, t.y - p.size / 2, p.size, p.size);
+      }
+      ctx.globalAlpha = 1;
+
+      // Draw Player Cube
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.angle);
+      ctx.fillStyle = skin.primary;
+      ctx.shadowColor = skin.primary;
+      ctx.shadowBlur = 15;
+      ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(-p.size / 2 + 3, -p.size / 2 + 3, p.size - 6, p.size - 6);
+      ctx.restore();
+
+      // Draw Obstacles (Neon Spikes)
+      for (const ob of runnerGame.obstacles) {
+        ctx.save();
+        ctx.fillStyle = '#f43f5e';
+        ctx.shadowColor = '#f43f5e';
+        ctx.shadowBlur = 12;
+        ctx.beginPath();
+        if (ob.onCeiling) {
+          ctx.moveTo(ob.x, ob.y);
+          ctx.lineTo(ob.x + ob.w / 2, ob.y + ob.h);
+          ctx.lineTo(ob.x + ob.w, ob.y);
+        } else {
+          ctx.moveTo(ob.x, ob.y + ob.h);
+          ctx.lineTo(ob.x + ob.w / 2, ob.y);
+          ctx.lineTo(ob.x + ob.w, ob.y + ob.h);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // Draw Orbs
+      for (const o of runnerGame.orbs) {
+        ctx.save();
+        ctx.fillStyle = '#facc15';
+        ctx.shadowColor = '#facc15';
+        ctx.shadowBlur = 12;
+        ctx.beginPath();
+        ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    // =========================================================================
+    // MODE 6: REFLEX CORE AIM LAB (ESPORTS TARGET CLICKER) LOGIC
+    // =========================================================================
+    function spawnAimTarget() {
+      const margin = 55;
+      const isBomb = Math.random() < 0.16;
+      const isGold = !isBomb && Math.random() < 0.22;
+      aimGame.targets.push({
+        x: margin + Math.random() * (cw - margin * 2),
+        y: margin + Math.random() * (ch - margin * 2),
+        r: isGold ? 22 : 30,
+        maxR: isGold ? 22 : 30,
+        shrinkRate: isGold ? 0.18 : 0.12 + Math.min(0.12, aimGame.hits * 0.002),
+        isBomb,
+        isGold,
+        bornAt: performance.now()
+      });
+    }
+
+    function handleAimClick(px, py) {
+      if (isGameOver || isPaused) return;
+      aimGame.clicks++;
+      for (let i = aimGame.targets.length - 1; i >= 0; i--) {
+        const t = aimGame.targets[i];
+        if (Math.hypot(px - t.x, py - t.y) <= t.r + 8) {
+          if (t.isBomb) {
+            aimGame.life -= 28;
+            screenShake = 10;
+            playSound('gameover');
+            spawnParticles(t.x, t.y, '#f43f5e', 20, 1.4);
+            addFloatingText(t.x, t.y, '💣 BOOM -28%', '#f43f5e', 16);
+            aimGame.targets.splice(i, 1);
+            if (aimGame.life <= 0) {
+              triggerGameOver('CORE OVERLOAD!', `आपने ${aimGame.hits} टारगेट्स हिट किए! लाल बॉम्ब से बचें।`);
+            }
+            return;
+          }
+          const rt = Math.max(90, Math.round(performance.now() - t.bornAt));
+          aimGame.avgReactionMs = Math.round(aimGame.avgReactionMs * 0.8 + rt * 0.2);
+          aimGame.hits++;
+          bumpCombo(1.2);
+          const pts = Math.round((t.isGold ? 150 : 75) * combo);
+          score += pts;
+          awardCoins(t.isGold ? 5 : 2);
+          playSound(t.isGold ? 'levelup' : 'coin');
+          spawnParticles(t.x, t.y, t.isGold ? '#facc15' : '#22d3ee', 16, 1.3);
+          addFloatingText(t.x, t.y, `+${pts} (${rt}ms)`, t.isGold ? '#facc15' : '#22d3ee', 13);
+          aimGame.targets.splice(i, 1);
+          spawnAimTarget();
+          return;
+        }
+      }
+    }
+
+    function updateAimMode() {
+      aimGame.spawnTimer++;
+      const spawnEvery = Math.max(24, 52 - Math.floor(aimGame.hits * 0.4));
+      if (aimGame.spawnTimer >= spawnEvery && aimGame.targets.length < 7) {
+        aimGame.spawnTimer = 0;
+        spawnAimTarget();
+      }
+
+      for (let i = aimGame.targets.length - 1; i >= 0; i--) {
+        const t = aimGame.targets[i];
+        t.r -= t.shrinkRate;
+        if (t.r <= 4) {
+          if (!t.isBomb) {
+            aimGame.life -= 12;
+            combo = 1;
+            addFloatingText(t.x, t.y, 'MISSED!', '#fb7185', 12);
+            if (aimGame.life <= 0) {
+              triggerGameOver('REFLEX TIMEOUT!', `आपने ${aimGame.hits} टारगेट्स हिट किए (Avg Reaction: ${aimGame.avgReactionMs}ms)!`);
+              return;
+            }
+          }
+          aimGame.targets.splice(i, 1);
+        }
+      }
+    }
+
+    function drawAimMode() {
+      for (const t of aimGame.targets) {
+        ctx.save();
+        const color = t.isBomb ? '#f43f5e' : t.isGold ? '#facc15' : '#22d3ee';
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 14;
+
+        // Outer ring
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(t.x, t.y, t.r, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Inner bullseye
+        ctx.globalAlpha = 0.32;
+        ctx.beginPath();
+        ctx.arc(t.x, t.y, t.r * 0.6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+
+        ctx.font = '14px Inter';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(t.isBomb ? '💣' : t.isGold ? '⭐' : '🎯', t.x, t.y);
+        ctx.restore();
+      }
+    }
+
+    // =========================================================================
+    // SPECIAL SKILL [SPACE] HANDLER (Mode-Adaptive Super Ability)
+    // =========================================================================
+    function triggerSpecialSkill() {
+      if (isGameOver || isPaused || isLevelUpModal) return;
+      if (novaCooldown > 0) {
+        showToast(`⏳ सुपर पावर रीचार्ज हो रही है (${Math.ceil(novaCooldown / 60)}s)!`);
+        return;
+      }
+
+      playSound('nova');
+      screenShake = 14;
+      novaCooldown = 480; // 8 seconds cooldown
+
+      if (currentMode === 'swarm') {
+        // Damage all enemies on screen heavily
+        spawnParticles(swarm.player.x, swarm.player.y, '#facc15', 45, 2.2);
+        addFloatingText(swarm.player.x, swarm.player.y - 20, '💥 HYPER NOVA BLAST!', '#facc15', 18);
+        for (let i = swarm.enemies.length - 1; i >= 0; i--) {
+          const e = swarm.enemies[i];
+          e.hp -= 120;
+          spawnParticles(e.x, e.y, '#22d3ee', 8, 1.1);
+        }
+      } else if (currentMode === 'merge') {
+        // Gravity shake pops smallest meteors & jostles planets to trigger merges!
+        addFloatingText(cw / 2, ch / 2, '🌪️ GRAVITY FUSION WAVE!', '#facc15', 18);
+        for (const o of mergeGame.orbs) {
+          o.vy = -4.5 - Math.random() * 2;
+          o.vx = (Math.random() - 0.5) * 6;
+          spawnParticles(o.x, o.y, '#38bdf8', 5, 0.8);
+        }
+      } else if (currentMode === 'stack') {
+        // Auto-lock perfect drop!
+        dropStackBlock(true);
+      } else if (currentMode === 'breaker') {
+        const pad = breakerGame.paddle;
+        breakerGame.balls.push({ x: pad.x + pad.w / 2, y: ch - 55, vx: -4.4, vy: -5.0, r: 8 });
+        breakerGame.balls.push({ x: pad.x + pad.w / 2, y: ch - 55, vx: 4.4, vy: -5.0, r: 8 });
+        addFloatingText(pad.x + pad.w / 2, ch - 70, '⚽ +2 PLASMA BALLS!', '#facc15', 16);
+      } else if (currentMode === 'runner') {
+        novaCooldown = 15; // quick cooldown for gravity flip
+        runnerGame.player.gravDir *= -1;
+        runnerGame.player.vy = 2.5 * runnerGame.player.gravDir;
+        runnerGame.player.jumpsLeft = 2;
+        addFloatingText(runnerGame.player.x, runnerGame.player.y, '🔄 GRAVITY FLIP!', '#38bdf8', 15);
+      } else if (currentMode === 'aim') {
+        // Auto-snipe all non-bomb targets on screen!
+        for (let i = aimGame.targets.length - 1; i >= 0; i--) {
+          const t = aimGame.targets[i];
+          if (!t.isBomb) {
+            aimGame.hits++;
+            score += 100;
+            awardCoins(2);
+            spawnParticles(t.x, t.y, '#facc15', 14, 1.2);
+            aimGame.targets.splice(i, 1);
+          }
+        }
+        for (let k = 0; k < 3; k++) spawnAimTarget();
+        addFloatingText(cw / 2, ch / 2, '🎯 HYPER AUTO-SNIPE!', '#facc15', 18);
+      }
+
+      updateHudBar();
+    }
+
+    // =========================================================================
+    // GAME OVER HANDLER
+    // =========================================================================
+    function triggerGameOver(title, subtitle) {
+      isGameOver = true;
+      playSound('gameover');
+      persistSaveData();
+      updateTopBarUI();
+      renderShopUI();
+      renderMissionsUI();
+
+      document.getElementById('overlayTitle').textContent = title;
+      document.getElementById('overlaySubtitle').textContent = subtitle;
+      document.getElementById('finalScoreStat').textContent = Math.floor(score).toLocaleString();
+      document.getElementById('finalCoinsStat').textContent = `+${sessionCoins}`;
+      document.getElementById('finalComboStat').textContent = `x${maxSessionCombo}`;
+      document.getElementById('gameOverOverlay').classList.remove('hidden');
+    }
+
+    // =========================================================================
+    // MAIN GAME LOOP
+    // =========================================================================
+    function gameLoop() {
+      if (!isPaused && !isGameOver && !isLevelUpModal) {
+        if (novaCooldown > 0) novaCooldown--;
+        if (comboTimer > 0) {
+          comboTimer--;
+          if (comboTimer === 0) combo = 1;
+        }
+
+        if (currentMode === 'swarm') updateSwarmMode();
+        else if (currentMode === 'merge') updateMergeMode();
+        else if (currentMode === 'stack') updateStackMode();
+        else if (currentMode === 'breaker') updateBreakerMode();
+        else if (currentMode === 'runner') updateRunnerMode();
+        else if (currentMode === 'aim') updateAimMode();
+
+        // Party Blitz 25s WarioWare Roulette Timer
+        if (partyBlitzActive) {
+          partyBlitzFrames--;
+          const blitzBadge = document.getElementById('blitzTimerBadge');
+          if (blitzBadge) {
+            blitzBadge.textContent = `🎲 NEXT MINI-GAME: ${Math.ceil(partyBlitzFrames / 60)}s`;
+          }
+          if (partyBlitzFrames <= 0) {
+            partyBlitzFrames = 25 * 60;
+            const allModes = ['swarm', 'merge', 'stack', 'breaker', 'runner', 'aim'];
+            const nextModes = allModes.filter(m => m !== currentMode);
+            const picked = nextModes[Math.floor(Math.random() * nextModes.length)];
+            const prevScore = score;
+            switchMode(picked);
+            score = prevScore + 150;
+            awardCoins(10);
+            playSound('levelup');
+            showToast(`🎲 PARTY BLITZ! Switched to ${picked.toUpperCase()} (+150 Bonus Score)!`);
+          }
+        }
+
+        // Update particles
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const pt = particles[i];
+          pt.x += pt.vx;
+          pt.y += pt.vy;
+          pt.alpha -= 0.028;
+          if (pt.alpha <= 0) particles.splice(i, 1);
+        }
+
+        // Update floating texts
+        for (let i = floatingTexts.length - 1; i >= 0; i--) {
+          const ft = floatingTexts[i];
+          ft.y += ft.vy;
+          ft.alpha -= 0.022;
+          if (ft.alpha <= 0) floatingTexts.splice(i, 1);
+        }
+
+        updateTopBarUI();
+        updateHudBar();
+      }
+
+      // Render Frame
+      ctx.save();
+      ctx.fillStyle = '#050814';
+      ctx.fillRect(0, 0, cw, ch);
+
+      // Ambient skin glow
+      const skin = SKINS[saveData.activeSkin] || SKINS.cyber_cyan;
+      const grad = ctx.createRadialGradient(cw / 2, ch / 2, 30, cw / 2, ch / 2, cw * 0.7);
+      grad.addColorStop(0, skin.bgGlow);
+      grad.addColorStop(1, 'rgba(5, 8, 20, 0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, cw, ch);
+
+      // Screen shake effect
+      if (screenShake > 0) {
+        const sx = (Math.random() - 0.5) * screenShake;
+        const sy = (Math.random() - 0.5) * screenShake;
+        ctx.translate(sx, sy);
+        screenShake *= 0.85;
+        if (screenShake < 0.4) screenShake = 0;
+      }
+
+      // Background animated stars
+      ctx.fillStyle = '#ffffff';
+      for (const st of stars) {
+        st.y += st.speed;
+        if (st.y > ch) st.y = 0;
+        ctx.globalAlpha = st.alpha;
+        ctx.beginPath();
+        ctx.arc(st.x, st.y, st.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+
+      // FPS Telemetry calculation
+      const nowPerf = performance.now();
+      const dt = Math.max(1, nowPerf - lastFrameTime);
+      lastFrameTime = nowPerf;
+      measuredFps = Math.round(measuredFps * 0.92 + (1000 / dt) * 0.08);
+      const fpsEl = document.getElementById('fpsTelemetry');
+      if (fpsEl && Math.random() < 0.15) fpsEl.textContent = `${Math.min(60, measuredFps)} FPS`;
+
+      // Mode Specific Render
+      if (currentMode === 'swarm') drawSwarmMode();
+      else if (currentMode === 'merge') drawMergeMode();
+      else if (currentMode === 'stack') drawStackMode();
+      else if (currentMode === 'breaker') drawBreakerMode();
+      else if (currentMode === 'runner') drawRunnerMode();
+      else if (currentMode === 'aim') drawAimMode();
+
+      // Render Particles
+      for (const pt of particles) {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, pt.alpha);
+        ctx.fillStyle = pt.color;
+        ctx.shadowColor = pt.color;
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, pt.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // Render Floating Score/Combo Texts
+      for (const ft of floatingTexts) {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, ft.alpha);
+        ctx.font = `900 ${ft.size}px Inter`;
+        ctx.fillStyle = ft.color;
+        ctx.textAlign = 'center';
+        ctx.fillText(ft.text, ft.x, ft.y);
+        ctx.restore();
+      }
+
+      // Pause Overlay Banner
+      if (isPaused && !isGameOver && !isLevelUpModal) {
+        ctx.fillStyle = 'rgba(2, 6, 23, 0.72)';
+        ctx.fillRect(0, 0, cw, ch);
+        ctx.fillStyle = '#22d3ee';
+        ctx.font = '900 26px Inter';
+        ctx.textAlign = 'center';
+        ctx.fillText('⏸️ GAME PAUSED', cw / 2, ch / 2 - 10);
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = '600 14px Inter';
+        ctx.fillText('वापस खेलने के लिए Pause बटन दबाएं', cw / 2, ch / 2 + 20);
+      }
+
+      ctx.restore();
+      animFrameId = requestAnimationFrame(gameLoop);
+    }
+
+    // =========================================================================
+    // MODE SWITCHING & EVENT LISTENERS
+    // =========================================================================
+    function switchMode(newMode) {
+      currentMode = newMode;
+      const btnMap = {
+        swarm: document.getElementById('modeSwarmBtn'),
+        merge: document.getElementById('modeMergeBtn'),
+        stack: document.getElementById('modeStackBtn'),
+        breaker: document.getElementById('modeBreakerBtn'),
+        runner: document.getElementById('modeRunnerBtn'),
+        aim: document.getElementById('modeAimBtn')
+      };
+
+      Object.values(btnMap).forEach(b => {
+        if (b) b.className = 'px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition-all';
+      });
+      if (btnMap[newMode]) {
+        btnMap[newMode].className = 'px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all tab-active';
+      }
+
+      const titleEl = document.getElementById('sidebarModeTitle');
+      const descEl = document.getElementById('sidebarModeDesc');
+      const hintEl = document.getElementById('modeControlHint');
+
+      if (newMode === 'swarm') {
+        titleEl.textContent = '🛸 Mini-Game 1: Cyber Swarm Survivor';
+        descEl.textContent = 'दुश्मनों की लहरों से बचें! आपका शिप खुद निशाना लगाता है। नीले जेम्स से Level Up करें और बॉस को हराएं।';
+        hintEl.innerHTML = '🎮 <strong class="text-cyan-300">Controls:</strong> माउस/उंगली घुमाएं या <kbd class="px-1.5 py-0.5 bg-slate-800 rounded text-[11px]">WASD / Arrows</kbd> दबाएं। ऑटो-फायर चालू है!';
+      } else if (newMode === 'merge') {
+        titleEl.textContent = '🪐 Mini-Game 2: Cosmo Planet Merge';
+        descEl.textContent = 'एक जैसे दो प्लैनेट्स को गिराकर आपस में मिलाएं ताकि वे बड़ा प्लैनेट बन जाएं! बॉक्स को ऊपर तक भरने न दें।';
+        hintEl.innerHTML = '🎮 <strong class="text-cyan-300">Controls:</strong> माउस/टच से निशाना लगाएं और <strong class="text-amber-300">Click / Tap / Up</strong> से प्लैनेट गिराएं!';
+      } else if (newMode === 'stack') {
+        titleEl.textContent = '🏗️ Mini-Game 3: Neon Stack Reflex';
+        descEl.textContent = 'चलती हुई नियोन स्लैब को ठीक नीचे वाले ब्लॉक के ऊपर लॉक करें! लगातार 3 Perfect Hits से ब्लॉक चौड़ा हो जाता है।';
+        hintEl.innerHTML = '🎮 <strong class="text-cyan-300">Controls:</strong> सही समय पर <strong class="text-amber-300">Click / Tap / Up Button</strong> दबाकर ब्लॉक लॉक करें!';
+      } else if (newMode === 'breaker') {
+        titleEl.textContent = '🧱 Mini-Game 4: Cyber Brick Breaker';
+        descEl.textContent = 'नियोन पैडल से प्लाज्मा बॉल बाउंस करें, TNT ब्रिक्स से धमाका करें और Multi-Ball पावरअप पकड़ें!';
+        hintEl.innerHTML = '🎮 <strong class="text-cyan-300">Controls:</strong> माउस/टच या <kbd class="px-1.5 py-0.5 bg-slate-800 rounded text-[11px]">Left / Right</kbd> से पैडल चलाएं। <strong class="text-amber-300">SPACE</strong> से +2 बॉल पाएं!';
+      } else if (newMode === 'runner') {
+        titleEl.textContent = '⚡ Mini-Game 5: Pulse Dash Runner';
+        descEl.textContent = 'हाई-स्पीड नियोन ट्रैक पर स्पाइक्स से बचें! हवा में Double Jump करें या SPACE दबाकर छत पर दौड़ें।';
+        hintEl.innerHTML = '🎮 <strong class="text-cyan-300">Controls:</strong> <strong class="text-amber-300">Click / Tap / Up</strong> से कूदें (Double Jump) और <strong class="text-cyan-300">SPACE</strong> से Gravity Flip करें!';
+      } else if (newMode === 'aim') {
+        titleEl.textContent = '🎯 Mini-Game 6: Reflex Core Aim Lab';
+        descEl.textContent = 'प्रो ई-स्पोर्ट्स रिफ्लेक्स टेस्ट! सिकुड़ते हुए नियोन टारगेट्स को फोड़ें, लेकिन लाल बॉम्ब को मत छुएं।';
+        hintEl.innerHTML = '🎮 <strong class="text-cyan-300">Controls:</strong> टारगेट्स पर तेज़ी से <strong class="text-amber-300">Click / Tap</strong> करें! <strong class="text-cyan-300">SPACE</strong> से स्क्रीन के सारे टारगेट स्नाइप करें!';
+      }
+
+      startCurrentMode();
+    }
+
+    window.onload = function () {
+      loadSaveData();
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+
+      // Mode Switcher Buttons (6 Mini-Games + Party Blitz)
+      document.getElementById('modeSwarmBtn').addEventListener('click', () => switchMode('swarm'));
+      document.getElementById('modeMergeBtn').addEventListener('click', () => switchMode('merge'));
+      document.getElementById('modeStackBtn').addEventListener('click', () => switchMode('stack'));
+      document.getElementById('modeBreakerBtn').addEventListener('click', () => switchMode('breaker'));
+      document.getElementById('modeRunnerBtn').addEventListener('click', () => switchMode('runner'));
+      document.getElementById('modeAimBtn').addEventListener('click', () => switchMode('aim'));
+
+      const blitzBtn = document.getElementById('partyBlitzBtn');
+      const blitzBadge = document.getElementById('blitzTimerBadge');
+      blitzBtn.addEventListener('click', () => {
+        partyBlitzActive = !partyBlitzActive;
+        partyBlitzFrames = 25 * 60;
+        blitzBtn.textContent = partyBlitzActive ? '🎲 Party Blitz: ON' : '🎲 Party Blitz: OFF';
+        blitzBtn.className = partyBlitzActive
+          ? 'px-2.5 py-1.5 rounded-lg text-xs font-black bg-amber-400 text-slate-950 shadow-lg transition-all'
+          : 'px-2.5 py-1.5 rounded-lg text-xs font-black bg-amber-500/20 border border-amber-400/50 text-amber-300 hover:bg-amber-500/30 transition-all';
+        if (blitzBadge) blitzBadge.classList.toggle('hidden', !partyBlitzActive);
+        showToast(partyBlitzActive ? '🎲 Party Blitz ON: हर 25 सेकंड में नया मिनी-गेम आएगा!' : '🎲 Party Blitz OFF');
+      });
+
+      // Retro CRT Shader Toggle
+      const crtBtn = document.getElementById('crtToggleBtn');
+      const crtOverlay = document.getElementById('crtOverlay');
+      let crtOn = false;
+      crtBtn.addEventListener('click', () => {
+        crtOn = !crtOn;
+        crtOverlay.classList.toggle('hidden', !crtOn);
+        crtBtn.textContent = crtOn ? '📺 Retro CRT: ON' : '📺 Retro CRT: OFF';
+      });
+
+      // BGM Toggle
+      document.getElementById('bgmToggleBtn').addEventListener('click', toggleBgm);
+
+      // Lucky Spin Wheel Modal
+      const spinModal = document.getElementById('luckySpinModal');
+      document.getElementById('luckySpinBtn').addEventListener('click', () => {
+        spinModal.classList.remove('hidden');
+      });
+      document.getElementById('closeSpinModalBtn').addEventListener('click', () => {
+        spinModal.classList.add('hidden');
+      });
+      document.getElementById('doSpinBtn').addEventListener('click', () => {
+        if (saveData.coins < 60) {
+          showToast('🪙 स्पिन के लिए 60 कॉइन्स चाहिए! Free +50 बटन दबाएं या गेम खेलें।');
+          return;
+        }
+        saveData.coins -= 60;
+        const wheel = document.getElementById('spinWheelVisual');
+        const resText = document.getElementById('spinResultText');
+        wheel.style.transform = `rotate(${720 + Math.floor(Math.random() * 720)}deg)`;
+        playSound('levelup');
+
+        const rewards = [
+          { label: '🎉 JACKPOT! +220 Coins!', apply: () => { saveData.coins += 220; } },
+          { label: '⚡ FREE Turbo Fire Upgrade!', apply: () => { saveData.upgrades.firepower += 1; } },
+          { label: '🧲 FREE Hyper Magnet Upgrade!', apply: () => { saveData.upgrades.magnet += 1; } },
+          { label: '🪙 +110 Bonus Coins!', apply: () => { saveData.coins += 110; } },
+          { label: '🔥 MEGA FEVER x8 BOOST!', apply: () => { combo = Math.max(combo, 8); comboTimer = 400; } }
+        ];
+        const picked = rewards[Math.floor(Math.random() * rewards.length)];
+        picked.apply();
+        resText.textContent = picked.label;
+        persistSaveData();
+        updateTopBarUI();
+        renderShopUI();
+      });
+
+      // Top Header Quick Scroll / Focus Buttons
+      document.getElementById('openShopBtn').addEventListener('click', () => {
+        document.getElementById('shopPanel').scrollIntoView({ behavior: 'smooth' });
+        showToast('🛒 Permanent Shop: कॉइन्स से अपनी पावर हमेशा के लिए बढ़ाएं!');
+      });
+      document.getElementById('openMissionsBtn').addEventListener('click', () => {
+        document.getElementById('missionsPanel').scrollIntoView({ behavior: 'smooth' });
+      });
+      document.getElementById('overlayShopBtn').addEventListener('click', () => {
+        document.getElementById('gameOverOverlay').classList.add('hidden');
+        document.getElementById('shopPanel').scrollIntoView({ behavior: 'smooth' });
+      });
+
+      // Sound Toggle
+      const soundBtn = document.getElementById('soundToggleBtn');
+      soundBtn.addEventListener('click', () => {
+        soundEnabled = !soundEnabled;
+        soundBtn.textContent = soundEnabled ? '🔊' : '🔇';
+        showToast(soundEnabled ? '🔊 साउंड इफेक्ट्स चालू' : '🔇 साउंड म्यूट');
+      });
+
+      // Free Bonus Gift Button
+      document.getElementById('claimBonusGiftBtn').addEventListener('click', () => {
+        saveData.coins += 50;
+        playSound('coin');
+        persistSaveData();
+        updateTopBarUI();
+        renderShopUI();
+        showToast('🎁 +50 बोनस कॉइन्स आपके अकाउंट में जुड़ गए!');
+      });
+
+      // Action Buttons
+      document.getElementById('specialSkillBtn').addEventListener('click', triggerSpecialSkill);
+      document.getElementById('pauseBtn').addEventListener('click', () => {
+        if (isGameOver || isLevelUpModal) return;
+        isPaused = !isPaused;
+        document.getElementById('pauseBtn').textContent = isPaused ? '▶️ Resume' : '⏸️ Pause';
+      });
+      document.getElementById('restartBtn').addEventListener('click', () => startCurrentMode());
+      document.getElementById('playAgainBtn').addEventListener('click', () => startCurrentMode());
+
+      // Canvas Pointer Controls
+      function updatePointerPos(clientX, clientY) {
+        const rect = canvas.getBoundingClientRect();
+        pointer.x = ((clientX - rect.left) / rect.width) * cw;
+        pointer.y = ((clientY - rect.top) / rect.height) * ch;
+      }
+
+      canvas.addEventListener('pointerdown', e => {
+        ensureAudio();
+        pointer.active = true;
+        updatePointerPos(e.clientX, e.clientY);
+        if (currentMode === 'merge') dropMergeOrb();
+        else if (currentMode === 'stack') dropStackBlock(false);
+        else if (currentMode === 'runner') jumpRunner();
+        else if (currentMode === 'aim') handleAimClick(pointer.x, pointer.y);
+      });
+      canvas.addEventListener('pointermove', e => {
+        updatePointerPos(e.clientX, e.clientY);
+      });
+      window.addEventListener('pointerup', () => {
+        pointer.active = false;
+      });
+
+      // Keyboard Controls
+      window.addEventListener('keydown', e => {
+        if (e.code in keys) {
+          keys[e.code] = true;
+        }
+        if (e.code === 'Space') {
+          e.preventDefault();
+          triggerSpecialSkill();
+        } else if ((e.code === 'ArrowUp' || e.code === 'KeyW' || e.code === 'Enter') && !isGameOver && !isPaused) {
+          if (currentMode === 'merge') dropMergeOrb();
+          else if (currentMode === 'stack') dropStackBlock(false);
+          else if (currentMode === 'runner') jumpRunner();
+        }
+      });
+      window.addEventListener('keyup', e => {
+        if (e.code in keys) keys[e.code] = false;
+      });
+
+      // On-Screen Touch/Click D-Pad Buttons
+      const bindHold = (btnId, keyName, tapAction) => {
+        const el = document.getElementById(btnId);
+        if (!el) return;
+        el.addEventListener('pointerdown', () => {
+          ensureAudio();
+          keys[keyName] = true;
+          if (tapAction) tapAction();
+        });
+        el.addEventListener('pointerup', () => { keys[keyName] = false; });
+        el.addEventListener('pointerleave', () => { keys[keyName] = false; });
+      };
+
+      bindHold('btnLeft', 'ArrowLeft');
+      bindHold('btnRight', 'ArrowRight');
+      bindHold('btnDown', 'ArrowDown');
+      bindHold('btnUp', 'ArrowUp', () => {
+        if (currentMode === 'merge') dropMergeOrb();
+        else if (currentMode === 'stack') dropStackBlock(false);
+        else if (currentMode === 'runner') jumpRunner();
+      });
+
+      // Initial UI & Game Boot
+      renderShopUI();
+      renderMissionsUI();
+      startCurrentMode();
+      if (animFrameId) cancelAnimationFrame(animFrameId);
+      animFrameId = requestAnimationFrame(gameLoop);
+    };
+  </script>
+</body>
+</html>
